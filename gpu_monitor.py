@@ -1,0 +1,39 @@
+import os
+import sys
+import time
+
+# 补充参数即可
+cmd = [
+    'bash ./tools/dist_train.sh configs/transmission_line_detcetion/retinanet_r50_fpn_1x_transmission_line_detection_4GPUs.py 4 --work-dir work_dir/7 --cfg-options runner.max_epochs=300'
+]
+
+ 
+def gpu_info():
+    gpu_status = os.popen('nvidia-smi | grep %').read().split('|')
+    gpu_memory = int(gpu_status[2].split('/')[0].split('M')[0].strip())
+    gpu_power = int(gpu_status[1].split('   ')[-1].split('/')[0].split('W')[0].strip())
+    return gpu_power, gpu_memory
+ 
+ 
+def narrow_setup(interval=60):    # 尽量让时间稍微长一点，不然可能又会触发下一个命令
+    gpu_power, gpu_memory = gpu_info()
+    i = 0
+    for i in range(len(cmd)):
+
+        while gpu_memory > 1000:# or gpu_power > 20:  # set waiting condition
+            gpu_power, gpu_memory = gpu_info()
+            i = i % 5
+            symbol = 'monitoring: ' + '>' * i + ' ' * (10 - i - 1) + '|'
+            gpu_power_str = 'gpu power:%d W |' % gpu_power
+            gpu_memory_str = 'gpu memory:%d MiB |' % gpu_memory
+            sys.stdout.write('\r' + gpu_memory_str + ' ' + gpu_power_str + ' ' + symbol)
+            sys.stdout.flush()
+            time.sleep(interval)
+            i += 1
+        print('\n' + cmd[0])
+        os.system(cmd[0])
+        cmd.pop(0)
+ 
+ 
+if __name__ == '__main__':
+    narrow_setup()
