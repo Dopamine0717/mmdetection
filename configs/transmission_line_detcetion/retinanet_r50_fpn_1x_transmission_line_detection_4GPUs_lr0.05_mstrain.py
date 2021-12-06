@@ -34,7 +34,7 @@ data = dict(
 
 # load_from = 'checkpoints/mask_rcnn_r50_caffe_fpn_mstrain-poly_3x_coco_bbox_mAP-0.408__segm_mAP-0.37_20200504_163245-42aa3d00.pth'
 load_from = 'checkpoints/retinanet_r50_fpn_1x_coco_20200130-c2398f9e.pth'
-optimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.05, momentum=0.9, weight_decay=0.0001)
 # optimizer = dict(_delete_=True, type='AdamW', lr=0.0005*4, weight_decay=0.01)
 lr_config = dict(
     policy='step',
