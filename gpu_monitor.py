@@ -4,7 +4,7 @@ import time
 
 # 补充参数即可
 cmd = [
-    'bash ./tools/dist_train.sh configs/transmission_line_detcetion/retinanet_r50_fpn_1x_transmission_line_detection_4GPUs.py 4 --work-dir work_dir/7 --cfg-options runner.max_epochs=300'
+    'bash ./tools/dist_train.sh configs/transmission_line_detcetion/retinanet_r50_fpn_1x_transmission_line_detection_4GPUs_lr0.1_mstrain.py 4 --work-dir work_dirs/baseline'
 ]
 
  
@@ -18,7 +18,7 @@ def gpu_info():
 def narrow_setup(interval=60):    # 尽量让时间稍微长一点，不然可能又会触发下一个命令
     gpu_power, gpu_memory = gpu_info()
     i = 0
-    for i in range(len(cmd)):
+    for _ in range(len(cmd)):
 
         while gpu_memory > 1000:# or gpu_power > 20:  # set waiting condition
             gpu_power, gpu_memory = gpu_info()
