@@ -45,14 +45,14 @@ optimizer = dict(type='SGD', lr=0.05, momentum=0.9, weight_decay=0.0001)
 lr_config = dict(
     policy='step',
     warmup='linear',
-    warmup_iters=200,
+    warmup_iters=400,
     warmup_ratio=0.001,
-    step=[60, 80])
-runner = dict(type='EpochBasedRunner', max_epochs=100)
+    step=[30, 40])
+runner = dict(type='EpochBasedRunner', max_epochs=50)
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=10, metric='bbox')
+evaluation = dict(interval=5, metric='bbox')
 log_config = dict(
-    interval=20,
+    interval=10,
     hooks=[
         dict(type='TextLoggerHook'),
         # dict(type='TensorboardLoggerHook')
