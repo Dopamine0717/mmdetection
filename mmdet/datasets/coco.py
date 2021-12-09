@@ -52,7 +52,7 @@ class CocoDataset(CustomDataset):
         # change with the order of the CLASSES
         self.cat_ids = self.coco.get_cat_ids(cat_names=self.CLASSES)
 
-        self.cat2label = {cat_id: i for i, cat_id in enumerate(self.cat_ids)}
+        self.cat2label = {cat_id: i for i, cat_id in enumerate(self.cat_ids)}    # 自动将类别id映射为连续的id
         self.img_ids = self.coco.get_img_ids()
         data_infos = []
         total_ann_ids = []
