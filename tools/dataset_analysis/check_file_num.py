@@ -34,7 +34,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "--dir-path", 
         type=str, 
-        default="/shared/xjd/chenchao/dataset/coco_custom/transmission_line_detection/train", 
+        default="/shared/xjd/DataSets/transmission_line_detection/train14000/Annotations", 
         help="dir path"
         )
     args = parser.parse_args()
