@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 import mmcv
 from mmcv import Config
 from mmdet.datasets.builder import build_dataset, build_dataloader
-
+from kmean import Kmean
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Browse a dataset')
+    parser = argparse.ArgumentParser(description='Analyze GT and anchor')
     parser.add_argument('config', help='train config file path')
     parser.add_argument(  # datalayer重复次数，由于数据有增强，故在数据量小的时候可以设置重复次数，统计更加准确
         '--repeat_count',
@@ -20,12 +20,12 @@ def parse_args():
     parser.add_argument(  # dataloader参数
         '--samples_per_gpu',
         type=int,
-        default=32,
+        default=16,
         help='batch size')
     parser.add_argument(  # dataloader参数
         '--workers_per_gpu',
         type=int,
-        default=16,
+        default=8,
         help='worker num')
     parser.add_argument(  # 统计得到的wh数据保存名称
         '--out_path',
@@ -36,7 +36,7 @@ def parse_args():
         '--use_local',
         type=bool,
         default=True,
-        help='is use save npy file')
+        help='whether to use saved npy file')
     args = parser.parse_args()
     return args
 
@@ -140,7 +140,7 @@ def statistics_hw_scale(wh_data):
 def calc_kmean(wh_data):
     print('----------统计anchor分布---------')
     cluster_number = 9  # anchor个数
-    kmean_clz = mmcv.Kmean(cluster_number)
+    kmean_clz = Kmean(cluster_number)
     anchor_nx2 = kmean_clz.clusters(wh_data)
     print("K anchors:\n {}".format(anchor_nx2))
 
@@ -152,4 +152,4 @@ if __name__ == '__main__':
 
     statistics_hw_ratio(wh_data)
     statistics_hw_scale(wh_data)
-    # calc_kmean(wh_data)
+    calc_kmean(wh_data)

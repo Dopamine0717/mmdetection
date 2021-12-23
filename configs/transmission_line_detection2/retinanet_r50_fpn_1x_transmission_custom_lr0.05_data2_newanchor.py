@@ -5,7 +5,7 @@ _base_ = '../retinanet/retinanet_r50_fpn_1x_coco.py'
 model = dict(
         bbox_head=dict(
             num_classes=5,
-            anchor_generator=dict(ratios=[0.2, 0.5, 1.0, 2.0, 5.0])
+            anchor_generator=dict(ratios=[0.5, 1.0, 2.0])
             )
             )
 

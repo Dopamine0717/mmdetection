@@ -171,7 +171,7 @@ data = dict(
                  'YanHuo')),
     persistent_workers=True)
 evaluation = dict(interval=2, metric='bbox')
-optimizer = dict(type='SGD', lr=0.05, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='AdamW', lr=0.001, weight_decay=0.01)
 optimizer_config = dict(grad_clip=None)
 lr_config = dict(
     policy='step',
@@ -192,5 +192,5 @@ load_from = 'checkpoints/retinanet_r50_fpn_1x_coco_20200130-c2398f9e.pth'
 resume_from = None
 workflow = [('train', 1)]
 classes = ('DaoXianYiWu', 'DiaoChe', 'ShiGongJiXie', 'TaDiao', 'YanHuo')
-work_dir = 'work_dirs2/lr0.05_custom_data2'
+work_dir = 'work_dirs2/lr0.001_custom_data2_adamw'
 gpu_ids = range(0, 4)

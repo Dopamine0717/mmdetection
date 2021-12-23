@@ -27,7 +27,7 @@ model = dict(
             type='AnchorGenerator',
             octave_base_scale=4,
             scales_per_octave=3,
-            ratios=[0.2, 0.5, 1.0, 2.0, 5.0],
+            ratios=[0.5, 1.0, 2.0],
             strides=[8, 16, 32, 64, 128]),
         bbox_coder=dict(
             type='DeltaXYWHBBoxCoder',
@@ -189,8 +189,8 @@ custom_hooks = [dict(type='NumClassCheckHook')]
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = 'checkpoints/retinanet_r50_fpn_1x_coco_20200130-c2398f9e.pth'
-resume_from = None
+resume_from = 'work_dirs2/lr0.05_custom_data2_newanchor/epoch_30.pth'
 workflow = [('train', 1)]
 classes = ('DaoXianYiWu', 'DiaoChe', 'ShiGongJiXie', 'TaDiao', 'YanHuo')
-work_dir = 'work_dirs2/lr0.05_custom_data2'
+work_dir = 'work_dirs2/lr0.05_custom_data2_newanchor'
 gpu_ids = range(0, 4)
