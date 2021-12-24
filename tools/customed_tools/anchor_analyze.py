@@ -2,6 +2,7 @@ from mmdet.core import build_anchor_generator
 import mmcv
 import numpy as np
 
+# 将每一个feature map上的anchor进行可视化
 
 def show_anchor(input_shape_hw, stride, anchor_generator_cfg, random_n, select_n):
     img = np.zeros(input_shape_hw, np.uint8)
