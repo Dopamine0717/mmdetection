@@ -1,6 +1,7 @@
 import argparse
 import numpy as np
 import torch
+import os
 import os.path as osp
 import matplotlib.pyplot as plt
 
@@ -67,12 +68,14 @@ def collect_wh_data(cfg, args, stop_count):
     return wh_all
 
 
-def select_data(cfg, args, stop_count=100):
+def select_data(cfg, args, stop_count=822):
     use_local = args.use_local
     out_path = args.out_path
     if not use_local or not osp.isfile(out_path):
         print('--------重新获取数据---------')
         wh_all_data = collect_wh_data(cfg, args, stop_count)
+        # if not osp.exists(out_path):
+        #     os.makedirs(out_path)
         np.save(out_path, wh_all_data)
         print('---------保存缓存文件--------')
     else:
@@ -100,7 +103,7 @@ def statistics_hw_ratio(wh_all):
     # # wh_df = pd.DataFrame(box_hw_larger_count, index=hw_ratio_larger_uq, columns=['hw_ratio>=1'])
     # # wh_df.plot(kind='bar', color="#55aacc")
 
-    hw_ratio_small = hw_ratio[hw_ratio < 1].round(1)
+    hw_ratio_small = hw_ratio[hw_ratio < 1].round(1)    # 保留一位小数
     hw_ratio_small_uq = np.unique(hw_ratio_small)
     box_hw_small_count = [np.count_nonzero(hw_ratio_small == i) for i in hw_ratio_small_uq]
 
@@ -109,8 +112,11 @@ def statistics_hw_ratio(wh_all):
     plt.xlabel('hw_ratio')
     plt.ylabel('num')
     plt.bar(hw_ratio_small_uq, box_hw_small_count, 0.05)  # 0-1之间
-
-    plt.show()
+    
+    plt.tight_layout()
+    plt.savefig('hw_ratio.png')
+    # plt.show()
+    plt.close()
 
     hw_ratio = np.concatenate((hw_ratio_small, hw_ratio_larger), axis=0).round(1)
     hw_ratio_uq = np.unique(hw_ratio).tolist()
@@ -134,7 +140,10 @@ def statistics_hw_scale(wh_data):
     plt.xlabel('h_scale')
     plt.ylabel('num')
     plt.hist(wh_data[:, 1], bins=1000)
-    plt.show()
+    
+    plt.tight_layout()
+    plt.savefig('hw_scale.png')
+    # plt.show()
 
 
 def calc_kmean(wh_data):
