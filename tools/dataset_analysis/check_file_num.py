@@ -3,11 +3,13 @@ import argparse
 
 def check_file_nums(dir_path, recursion=False):
     '''This function can help us check the file numbers of the dir_path.
+    
     Args:
-        dir_path:{str} The path of the folder to check.
-        recursion:{bool} whether to preform recursive query. Default is False.
+        dir_path (str): The path of the folder to check.
+        recursion (bool): whether to preform recursive query. Default is False.
 
-    Returns: numbers of file, numbers of dir
+    Return: 
+        numbers of file, numbers of dir
     '''
     if os.path.isdir(dir_path):
         if not recursion:

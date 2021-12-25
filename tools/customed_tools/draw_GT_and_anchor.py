@@ -4,6 +4,7 @@ import cv2
 import os.path as osp
 import torch
 import mmcv
+import matplotlib.pyplot as plt
 from mmcv import Config
 from mmdet.datasets.builder import build_dataset, build_dataloader
 from mmdet.core import build_anchor_generator
@@ -104,6 +105,109 @@ def get_all_GTs(cfg, args):
         print('-------从缓存文件中读取-------')
         all_GT = np.load(out_path)
     return all_GT
+
+def get_gt_wh(cfg, args):
+    """Get all the ground truths in the dataset.
+
+    Args:
+        cfg: Config of model.
+        args: Parameters passed in from the command line.
+    
+    Return:
+        all the ground truths.
+    """
+    use_local = args.use_local
+    out_path = args.out_path
+    if not use_local or not osp.isfile(out_path):
+        print('--------重新获取数据---------')
+        dataset = build_dataset(cfg.data.train)
+        dataloader = build_dataloader(dataset, args.samples_per_gpu, args.workers_per_gpu)
+        print('--------开始遍历数据集--------')
+        w_gt = []
+        h_gt = []
+        progress_bar = mmcv.ProgressBar(len(dataloader))
+        for i, data_batch in enumerate(dataloader):
+            gt_bboxes = data_batch['gt_bboxes'].data[0]
+            gt_bboxes = torch.cat(gt_bboxes, dim=0).numpy()
+            if len(gt_bboxes) == 0:
+                    continue
+            w = gt_bboxes[:, 2] - gt_bboxes[:, 0]
+            h = gt_bboxes[:, 3] - gt_bboxes[:, 1]
+            w_gt.append(w)
+            h_gt.append(h)
+            progress_bar.update()
+        w_gt = np.concatenate(w_gt, axis=0)
+        h_gt = np.concatenate(h_gt, axis=0)
+        print(f"all ground truths' shape is {w_gt.shape}.")
+        # TODO:save data into a cache file
+    return w_gt, h_gt
+
+def plot_scatter(cfg, args):
+    """plot scatter of the gt and anchor.
+
+    Args:
+        cfg: Config of model.
+        args: Parameters passed in from the command line.
+    """
+    anchor_generator_cfg = dict(
+        type='AnchorGenerator',
+        octave_base_scale=4,
+        scales_per_octave=3,
+        ratios=[0.5, 1.0, 2.0],
+        strides=[8, 16, 32, 64, 128])
+    anchor_generator = build_anchor_generator(anchor_generator_cfg)
+    w_anchor = []
+    h_anchor = []
+    for i in range(len(anchor_generator.base_anchors)):
+        base_anchors = anchor_generator.base_anchors[i]
+        base_anchors = base_anchors[:,:].cpu().numpy()
+        w = base_anchors[:,2] - base_anchors[:,0]
+        h = base_anchors[:,3] - base_anchors[:,1]
+        w_anchor.append(w)
+        h_anchor.append(h)
+    w_anchor = np.concatenate(w_anchor, axis=0)
+    h_anchor = np.concatenate(h_anchor, axis=0)
+    w_gt, h_gt = get_gt_wh(cfg, args)
+    plt.scatter(w_anchor, h_anchor, color='hotpink', marker='x')
+    plt.scatter(w_gt, h_gt, color='#88c999')
+    plt.savefig('scatter.png')
+
+def plot_scatter2(cfg, args):
+    """plot scatter of the gt and anchor.
+
+    Args:
+        cfg: Config of model.
+        args: Parameters passed in from the command line.
+    """
+    anchor_generator_cfg = dict(
+        type='AnchorGenerator',
+        octave_base_scale=4,
+        scales_per_octave=3,
+        ratios=[0.5, 1.0, 2.0],
+        strides=[8, 16, 32, 64, 128])
+    anchor_generator = build_anchor_generator(anchor_generator_cfg)
+    w_anchor = []
+    h_anchor = []
+    for i in range(len(anchor_generator.base_anchors)):
+        base_anchors = anchor_generator.base_anchors[i]
+        base_anchors = base_anchors[:,:].cpu().numpy()
+        w = base_anchors[:,2] - base_anchors[:,0]
+        h = base_anchors[:,3] - base_anchors[:,1]
+        w_anchor.append(w)
+        h_anchor.append(h)
+    w_anchor = np.concatenate(w_anchor, axis=0)
+    h_anchor = np.concatenate(h_anchor, axis=0)
+    all_GT = get_all_GTs(cfg, args)
+    w_gt = all_GT[:,2] - all_GT[:,0]
+    h_gt = all_GT[:,3] - all_GT[:,1]
+    plt.scatter(w_gt, h_gt, color='#88c999')
+    plt.scatter(w_anchor, h_anchor, color='hotpink', marker='x')
+    
+    plt.title("GT and anchors")
+    plt.xlabel("width")
+    plt.ylabel("height")
+    plt.legend(("gt", "anchors"), loc = 0)
+    plt.savefig('scatter.png')
 
 def show_GT_and_anchors(cfg, args, input_shape_hw, stride, anchor_generator_cfg):
     """Visualize GT bbox and anchor bbox in object detection by drawing rectangle.
@@ -319,9 +423,10 @@ def demo_retinanet(cfg, args, input_shape_hw):
 if __name__ == '__main__':
     args = parse_args()
     cfg = Config.fromfile(args.config)
-    input_shape_hw = (1333, 1333, 3)
-    demo_retinanet(cfg, args, input_shape_hw)
-
+    # input_shape_hw = (1333, 1333, 3)
+    # demo_retinanet(cfg, args, input_shape_hw)
+    
+    plot_scatter2(cfg, args)
 
 
 
