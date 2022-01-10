@@ -28,6 +28,11 @@ def parse_args():
         type=str,
         default='GT_data.npy',
         help='save GT data npy path')
+    parser.add_argument(
+        '--image-name',
+        type=str,
+        default='scatter30462.png',
+        help='save GT data npy path')
     parser.add_argument(  # When there is a local cache, whether to use it without going through the datalayer again, saving time
         '--use_local',
         type=bool,
@@ -181,9 +186,9 @@ def plot_scatter2(cfg, args):
     """
     anchor_generator_cfg = dict(
         type='AnchorGenerator',
-        octave_base_scale=4,
+        octave_base_scale=2,
         scales_per_octave=3,
-        ratios=[0.5, 1.0, 2.0],
+        ratios=[0.15, 0.35, 0.6, 1.0, 1.75, 3.5],
         strides=[8, 16, 32, 64, 128])
     anchor_generator = build_anchor_generator(anchor_generator_cfg)
     w_anchor = []
@@ -200,14 +205,14 @@ def plot_scatter2(cfg, args):
     all_GT = get_all_GTs(cfg, args)
     w_gt = all_GT[:,2] - all_GT[:,0]
     h_gt = all_GT[:,3] - all_GT[:,1]
-    plt.scatter(w_gt, h_gt, color='#88c999')
+    plt.scatter(w_gt, h_gt, color='#88c999', alpha=0.1)
     plt.scatter(w_anchor, h_anchor, color='hotpink', marker='x')
     
     plt.title("GT and anchors")
     plt.xlabel("width")
     plt.ylabel("height")
     plt.legend(("gt", "anchors"), loc = 0)
-    plt.savefig('scatter.png')
+    plt.savefig(f'{args.image_name}')
 
 def show_GT_and_anchors(cfg, args, input_shape_hw, stride, anchor_generator_cfg):
     """Visualize GT bbox and anchor bbox in object detection by drawing rectangle.

@@ -319,7 +319,7 @@ class BaseDetector(BaseModule, metaclass=ABCMeta):
             bbox_result, segm_result = result, None
         bboxes = np.vstack(bbox_result)
         labels = [
-            np.full(bbox.shape[0], i, dtype=np.int32)
+            np.full(bbox.shape[0], i, dtype=np.int32)    # 根据指定的shape，用指定的value进行填充
             for i, bbox in enumerate(bbox_result)
         ]
         labels = np.concatenate(labels)

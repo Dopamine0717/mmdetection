@@ -27,14 +27,14 @@ def parse_args():
     parser.add_argument(
         '--work-dir',
         help='the directory to save the file containing evaluation metrics')
-    parser.add_argument('--out', help='output result file in pickle format')
+    parser.add_argument('--out', help='output result file in pickle format')    # TODO:保存为json文件
     parser.add_argument(
         '--fuse-conv-bn',
         action='store_true',
         help='Whether to fuse conv and bn, this will slightly increase'
         'the inference speed')
     parser.add_argument(
-        '--format-only',
+        '--format-only',    # TODO:这个参数有说法吗？
         action='store_true',
         help='Format the output results without perform evaluation. It is'
         'useful when you want to format the result to a specific format and '

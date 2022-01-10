@@ -37,13 +37,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='add one node to a xml file!')
     parser.add_argument(
         "--xml-dir",
-        default='/shared/xjd/DataSets/transmission_line_detection/train_xml',
+        default='/shared/xjd/DataSets/transmission_line_detection/test_demo_xml',
         type=str,
         help='Directory path to xml files.'
         )
     parser.add_argument(
         "--img-dir",
-        default='/shared/xjd/DataSets/transmission_line_detection/train',
+        default='/shared/xjd/DataSets/transmission_line_detection/test_demo',
         type=str,
         help='Directory path to jpg files.'
     )
