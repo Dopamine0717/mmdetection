@@ -124,6 +124,7 @@ work_dirs_test/
 *.npy
 *.jpg
 *.json
+*.png
 
 # Pytorch
 *.pth
