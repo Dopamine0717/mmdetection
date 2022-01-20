@@ -147,7 +147,7 @@ def inference_detector(model, imgs):
         results = model(return_loss=False, rescale=True, **data)
 
     if not is_batch:
-        return results[0]
+        return results[0]   # 为什么返回0是因为只检测一张图片。相当于只返回一张图片的结果
     else:
         return results
 

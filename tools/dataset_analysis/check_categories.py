@@ -14,7 +14,7 @@ def gen_classes(path, xml_file):
             classes.append(cls_name)
     return classes
 
-path = '/shared/xjd/DataSets/transmission_line_detection/train14000/Annotations'
+path = '/shared/xjd/DataSets/transmission_line_detection/self_labeled_xml'
 
 xml_files = os.listdir(path)
 for xml_file in xml_files:
