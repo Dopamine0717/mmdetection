@@ -181,7 +181,7 @@ if __name__ == '__main__':
         )
     parser.add_argument(
         "--xml-dir2", 
-        default='/shared/xjd/DataSets/transmission_line_detection/test',
+        default='/shared/xjd/DataSets/transmission_line_detection/test_xml',
         type=str,
         help='Directory path to xml files.'
         )
@@ -211,7 +211,11 @@ if __name__ == '__main__':
         )
     args = parser.parse_args()
     xml_files = glob.glob(os.path.join(args.xml_dir, "*.xml"))    # 返回以.xml结尾的目录及文件列表
-    
+    xml_files2 = glob.glob(os.path.join(args.xml_dir2, "*.xml"))
+    xml_files2.extend(xml_files[-200:])
+
+
+
     # 下面的代码只有在结合两个来源的数据的时候用到
     # xml_files2 = glob.glob(os.path.join('/shared/xjd/DataSets/transmission_line_detection/train14000_xml', "*.xml"))
     # xml_files2 = glob.glob(os.path.join(args.xml_dir2, "*.xml"))
@@ -224,9 +228,9 @@ if __name__ == '__main__':
     # xml_files.extend(xml_files4)
 
     print(f"Number of xml files:{len(xml_files)}")
-    convert(xml_files, args.json_file)
+    convert(xml_files[:-200], args.json_file)
     print(f"Success:{args.json_file}")
 
-    # print(f"Number of xml files:{len(xml_files3)}")
-    # convert(xml_files3, args.json_file2)
-    # print(f"Success:{args.json_file2}")
+    print(f"Number of xml files:{len(xml_files2)}")
+    convert(xml_files2, args.json_file2)
+    print(f"Success:{args.json_file2}")
