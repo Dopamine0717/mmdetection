@@ -28,7 +28,7 @@ model = dict(
 
 
 load_from = 'checkpoints/retinanet_r50_fpn_1x_coco_20200130-c2398f9e.pth'
-optimizer = dict(type='SGD', lr=0.05, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001)
 lr_config = dict(
     policy='step',
     warmup='linear',
@@ -37,9 +37,7 @@ lr_config = dict(
     step=[12, 16])
 runner = dict(type='EpochBasedRunner', max_epochs=20)
 checkpoint_config = dict(interval=5)
-evaluation = dict(interval=1, metric='bbox',
-jsonfile_prefix='work_dirs3/retinanet_transmission_test/data1_softnms0.7_bbox_weight2')
-
+evaluation = dict(interval=1, metric='bbox')
 log_config = dict(
     interval=20,
     hooks=[

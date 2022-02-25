@@ -13,7 +13,7 @@ class GroupSampler(Sampler):
         assert hasattr(dataset, 'flag')
         self.dataset = dataset
         self.samples_per_gpu = samples_per_gpu
-        self.flag = dataset.flag.astype(np.int64)
+        self.flag = dataset.flag.astype(np.int64)    # 生成dataset过程中_set_group_flag根据aspect ratio生成了flag
         self.group_sizes = np.bincount(self.flag)
         self.num_samples = 0
         for i, size in enumerate(self.group_sizes):

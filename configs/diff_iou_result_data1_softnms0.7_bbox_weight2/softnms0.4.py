@@ -22,7 +22,7 @@ model = dict(
         nms_pre=1000,
         min_bbox_size=0,
         score_thr=0.05,
-        nms=dict(type='soft_nms', iou_threshold=0.7),
+        nms=dict(type='soft_nms', iou_threshold=0.4),
         max_per_img=100)
             )
 
@@ -38,7 +38,7 @@ lr_config = dict(
 runner = dict(type='EpochBasedRunner', max_epochs=20)
 checkpoint_config = dict(interval=5)
 evaluation = dict(interval=1, metric='bbox',
-jsonfile_prefix='work_dirs3/retinanet_transmission_test/data1_softnms0.7_bbox_weight2')
+jsonfile_prefix='work_dirs3/diff_iou_result_data1_softnms0.7_bbox_weight2/softnms0.5')
 
 log_config = dict(
     interval=20,

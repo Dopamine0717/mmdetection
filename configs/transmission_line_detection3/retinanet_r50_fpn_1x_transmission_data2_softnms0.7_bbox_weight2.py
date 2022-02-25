@@ -34,14 +34,16 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=400,
     warmup_ratio=0.001,
-    step=[12, 16])
-runner = dict(type='EpochBasedRunner', max_epochs=20)
+    step=[30, 40])
+runner = dict(type='EpochBasedRunner', max_epochs=50)
 checkpoint_config = dict(interval=5)
-evaluation = dict(interval=1, metric='bbox',
-jsonfile_prefix='work_dirs3/retinanet_transmission_test/data1_softnms0.7_bbox_weight2')
-
+evaluation = dict(
+    interval=2, 
+    metric='bbox',
+    jsonfile_prefix='work_dirs3/data2_softnms0.7/data2_softnms0.7'
+)
 log_config = dict(
-    interval=20,
+    interval=40,
     hooks=[
         dict(type='TextLoggerHook'),
         dict(type='TensorboardLoggerHook')
@@ -85,7 +87,7 @@ data = dict(
     train=dict(
         type=dataset_type,
         img_prefix=data_root,
-        ann_file=data_root + 'instances_train.json',    # data1:instances_train.json  data2:instances_train30462.json
+        ann_file=data_root + 'instances_train30462.json',    # data1:instances_train.json  data2:instances_train30462.json
         classes=classes,
         pipeline=train_pipeline),
     val=dict(

@@ -5,8 +5,7 @@ _base_ = '../retinanet/retinanet_r50_fpn_1x_coco.py'
 model = dict(
     bbox_head=dict(
         num_classes=5,
-        anchor_generator=dict(ratios=[0.2, 0.5, 1.0, 2.0, 5.0]),
-        loss_bbox=dict(type='L1Loss', loss_weight=2.0)
+        anchor_generator=dict(ratios=[0.2, 0.5, 1.0, 2.0, 5.0])
         ),
     train_cfg=dict(
         assigner=dict(
@@ -37,11 +36,13 @@ lr_config = dict(
     step=[12, 16])
 runner = dict(type='EpochBasedRunner', max_epochs=20)
 checkpoint_config = dict(interval=5)
-evaluation = dict(interval=1, metric='bbox',
-jsonfile_prefix='work_dirs3/retinanet_transmission_test/data1_softnms0.7_bbox_weight2')
-
+evaluation = dict(
+    interval=2, 
+    metric='bbox',
+    jsonfile_prefix='work_dirs3/data2_softnms0.7/data2_softnms0.7'
+)
 log_config = dict(
-    interval=20,
+    interval=40,
     hooks=[
         dict(type='TextLoggerHook'),
         dict(type='TensorboardLoggerHook')
@@ -85,7 +86,7 @@ data = dict(
     train=dict(
         type=dataset_type,
         img_prefix=data_root,
-        ann_file=data_root + 'instances_train.json',    # data1:instances_train.json  data2:instances_train30462.json
+        ann_file=data_root + 'instances_train30462.json',    # data1:instances_train.json  data2:instances_train30462.json
         classes=classes,
         pipeline=train_pipeline),
     val=dict(

@@ -6,7 +6,7 @@ model = dict(
     bbox_head=dict(
         num_classes=5,
         anchor_generator=dict(ratios=[0.2, 0.5, 1.0, 2.0, 5.0]),
-        loss_bbox=dict(type='L1Loss', loss_weight=2.0)
+        loss_bbox=dict(type='L1Loss', loss_weight=1.5)
         ),
     train_cfg=dict(
         assigner=dict(

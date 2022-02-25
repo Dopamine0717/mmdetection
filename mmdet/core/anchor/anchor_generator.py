@@ -177,7 +177,7 @@ class AnchorGenerator:
         h_ratios = torch.sqrt(ratios)
         w_ratios = 1 / h_ratios
         if self.scale_major:
-            ws = (w * w_ratios[:, None] * scales[None, :]).view(-1)
+            ws = (w * w_ratios[:, None] * scales[None, :]).view(-1)    # 切片时使用None可以增加维度
             hs = (h * h_ratios[:, None] * scales[None, :]).view(-1)
         else:
             ws = (w * scales[:, None] * w_ratios[None, :]).view(-1)

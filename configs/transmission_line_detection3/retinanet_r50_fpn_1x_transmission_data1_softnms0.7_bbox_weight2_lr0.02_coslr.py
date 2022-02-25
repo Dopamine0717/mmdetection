@@ -1,6 +1,10 @@
 # --coding=utf-8--
 
-_base_ = '../retinanet/retinanet_r50_fpn_1x_coco.py'
+_base_ = [
+    '../_base_/models/retinanet_r50_fpn.py',
+    '../_base_/datasets/coco_detection.py',
+    '../_base_/default_runtime.py'
+]
 
 model = dict(
     bbox_head=dict(
@@ -28,18 +32,17 @@ model = dict(
 
 
 load_from = 'checkpoints/retinanet_r50_fpn_1x_coco_20200130-c2398f9e.pth'
-optimizer = dict(type='SGD', lr=0.05, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=0.0001)
+optimizer_config = dict(grad_clip=None)
 lr_config = dict(
-    policy='step',
+    policy='CosineAnnealing',
     warmup='linear',
     warmup_iters=400,
-    warmup_ratio=0.001,
-    step=[12, 16])
+    warmup_ratio=1.0 / 10,
+    min_lr_ratio=1e-5)
 runner = dict(type='EpochBasedRunner', max_epochs=20)
 checkpoint_config = dict(interval=5)
-evaluation = dict(interval=1, metric='bbox',
-jsonfile_prefix='work_dirs3/retinanet_transmission_test/data1_softnms0.7_bbox_weight2')
-
+evaluation = dict(interval=1, metric='bbox')
 log_config = dict(
     interval=20,
     hooks=[

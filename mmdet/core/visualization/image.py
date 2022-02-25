@@ -132,9 +132,10 @@ def imshow_det_bboxes(img,
     polygons = []
     color = []
 
-    cate_nums = dict()    # TODO:
-    for class_name in class_names:
-        cate_nums[class_name] = 0
+    # cate_nums = dict()    # TODO:
+    # for class_name in class_names:
+    #     cate_nums[class_name] = 0
+
     for i, (bbox, label) in enumerate(zip(bboxes, labels)):
         bbox_int = bbox.astype(np.int32)
         poly = [[bbox_int[0], bbox_int[1]], [bbox_int[0], bbox_int[3]],
@@ -145,10 +146,10 @@ def imshow_det_bboxes(img,
         label_text = class_names[
             label] if class_names is not None else f'class {label}'
 
-        # TODO:
-        for i in class_names:
-            if label_text == i:
-                cate_nums[i] += 1
+        # # TODO:
+        # for i in class_names:
+        #     if label_text == i:
+        #         cate_nums[i] += 1
         
 
         if len(bbox) > 4:
@@ -172,8 +173,9 @@ def imshow_det_bboxes(img,
             mask = segms[i].astype(bool)
             img[mask] = img[mask] * 0.5 + color_mask * 0.5
 
-    # TODO:
-    print(cate_nums)
+    # # TODO:
+    # print(cate_nums)
+
     plt.imshow(img)
 
     p = PatchCollection(

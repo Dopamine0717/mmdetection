@@ -4,7 +4,7 @@ import time
 
 # 补充参数即可
 cmd = [
-    'bash ./tools/dist_train.sh configs/transmission_line_detcetion/retinanet_r50_fpn_1x_transmission_line_detection_4GPUs_lr0.1_mstrain.py 4 --work-dir work_dirs/baseline'
+    'CUDA_VISIBLE_DEVICES=0 python tools/test.py configs/diff_iou_result_data1_softnms0.7_bbox_weight2/softnms0.4.py work_dirs3/data1_softnms0.7_bbox_weight2/epoch_20.pth --eval bbox --show-dir work_dirs3/diff_iou_result_data1_softnms0.7_bbox_weight2/softnms0.4/test_result --out work_dirs3/diff_iou_result_data1_softnms0.7_bbox_weight2/softnms0.4/trans_retinanet_result.pkl'
 ]
 
  

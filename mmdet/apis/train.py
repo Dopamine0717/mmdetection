@@ -105,7 +105,7 @@ def train_detector(model,
             dist=distributed,
             seed=cfg.seed,
             runner_type=runner_type,
-            persistent_workers=cfg.data.get('persistent_workers', False))
+            persistent_workers=cfg.data.get('persistent_workers', False))    # TODO:persistent_workers作用
         for ds in dataset
     ]
 

@@ -196,7 +196,7 @@ class CustomDataset(Dataset):
 
         if self.test_mode:
             return self.prepare_test_img(idx)
-        while True:
+        while True:    # 当某一张图片错误时候，会随机选择另一张，而不至于报错
             data = self.prepare_train_img(idx)
             if data is None:
                 idx = self._rand_another(idx)

@@ -11,7 +11,10 @@ from mmdet.core.utils import mask2ndarray
 from mmdet.core.visualization import imshow_det_bboxes
 from mmdet.datasets.builder import build_dataset
 
-
+'''
+    作用: 对dataset吐出来的数据进行可视化检查。这些数据是经过了pipeline后的数据。
+          用以查看数据增强策略是否合适。
+'''
 def parse_args():
     parser = argparse.ArgumentParser(description='Browse a dataset')
     parser.add_argument('config', help='train config file path')

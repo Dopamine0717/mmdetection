@@ -402,7 +402,7 @@ class ResNet(BaseModule):
                           'please use "init_cfg" instead')
             self.init_cfg = dict(type='Pretrained', checkpoint=pretrained)
         elif pretrained is None:
-            if init_cfg is None:
+            if init_cfg is None:    # 如果pretrained和init_cfg都没有指定的话，需要定义一下网络权重的初始化值
                 self.init_cfg = [
                     dict(type='Kaiming', layer='Conv2d'),
                     dict(
@@ -606,12 +606,12 @@ class ResNet(BaseModule):
                 bias=False)
             self.norm1_name, norm1 = build_norm_layer(
                 self.norm_cfg, stem_channels, postfix=1)
-            self.add_module(self.norm1_name, norm1)
+            self.add_module(self.norm1_name, norm1)    # 可以以简写的方式访问到指定的layer，self.bn1 >> BatchNorm2d
             self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
     def _freeze_stages(self):
-        if self.frozen_stages >= 0:
+        if self.frozen_stages >= 0:    # 固定住stem的权重，不进行梯度更新，self.frozen_stages=1指固定住stem加第一个stage的权重
             if self.deep_stem:
                 self.stem.eval()
                 for param in self.stem.parameters():

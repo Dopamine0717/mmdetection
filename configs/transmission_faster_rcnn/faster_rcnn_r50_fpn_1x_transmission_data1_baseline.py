@@ -1,33 +1,12 @@
 # --coding=utf-8--
 
-_base_ = '../retinanet/retinanet_r50_fpn_1x_coco.py'
+_base_ = '../faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py'
 
 model = dict(
-    bbox_head=dict(
-        num_classes=5,
-        anchor_generator=dict(ratios=[0.2, 0.5, 1.0, 2.0, 5.0]),
-        loss_bbox=dict(type='L1Loss', loss_weight=2.0)
-        ),
-    train_cfg=dict(
-        assigner=dict(
-            type='MaxIoUAssigner',
-            pos_iou_thr=0.5,
-            neg_iou_thr=0.4,
-            min_pos_iou=0,
-            ignore_iof_thr=-1),
-        allowed_border=-1,
-        pos_weight=-1,
-        debug=False),
-    test_cfg=dict(
-        nms_pre=1000,
-        min_bbox_size=0,
-        score_thr=0.05,
-        nms=dict(type='soft_nms', iou_threshold=0.7),
-        max_per_img=100)
-            )
+    roi_head=dict(
+        bbox_head=dict(num_classes=5)))
 
-
-load_from = 'checkpoints/retinanet_r50_fpn_1x_coco_20200130-c2398f9e.pth'
+load_from = 'checkpoints/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth'
 optimizer = dict(type='SGD', lr=0.05, momentum=0.9, weight_decay=0.0001)
 lr_config = dict(
     policy='step',
@@ -37,9 +16,7 @@ lr_config = dict(
     step=[12, 16])
 runner = dict(type='EpochBasedRunner', max_epochs=20)
 checkpoint_config = dict(interval=5)
-evaluation = dict(interval=1, metric='bbox',
-jsonfile_prefix='work_dirs3/retinanet_transmission_test/data1_softnms0.7_bbox_weight2')
-
+evaluation = dict(interval=1, metric='bbox')
 log_config = dict(
     interval=20,
     hooks=[
@@ -79,7 +56,7 @@ test_pipeline = [
 ]
 
 data = dict(
-    samples_per_gpu=16,
+    samples_per_gpu=12,
     workers_per_gpu=8,
     persistent_workers=True,
     train=dict(
