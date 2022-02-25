@@ -122,6 +122,12 @@ work_dirs2/
 work_dirs3/
 work_dirs_test/
 work_dirs_add_GanTa/
+work_dirs_atss/
+work_dirs_cascade_rcnn/
+work_dirs_faster_rcnn/
+work_dirs_fcos/
+work_dirs_retinanet/
+work_dirs_yolof/
 *.npy
 *.jpg
 *.json
