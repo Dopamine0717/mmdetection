@@ -1,6 +1,7 @@
 import argparse
 import numpy as np
 import cv2
+import os
 import os.path as osp
 import torch
 import mmcv
@@ -9,7 +10,7 @@ from mmcv import Config
 from mmdet.datasets.builder import build_dataset, build_dataloader
 from mmdet.core import build_anchor_generator
 
-
+# TODO:需要实现对每试的一组参数，散点图都保存到相应的文件夹下，名字的话取名即为参数的组合
 def parse_args():
     parser = argparse.ArgumentParser(description='Analyze GT and anchor')
     parser.add_argument('config', help='train config file path')
@@ -33,6 +34,11 @@ def parse_args():
         type=str,
         default='scatter30462.png',
         help='save GT data npy path')
+    parser.add_argument(
+        '--save-dir',
+        type=str,
+        default='/shared/xjd/chenchao/mmdetection/anchor_analyze/',
+        help='save dir')
     parser.add_argument(  # When there is a local cache, whether to use it without going through the datalayer again
         '--use_local',
         type=bool,
@@ -183,10 +189,18 @@ def plot_scatter2(cfg, args):
     """
     anchor_generator_cfg = dict(
         type='AnchorGenerator',
-        octave_base_scale=2,
+        octave_base_scale=4,
         scales_per_octave=3,
-        ratios=[0.2, 0.5, 1.0, 2.0, 5.0],
+        ratios=[0.25, 0.6, 1.0, 1.8, 3.0],
         strides=[8, 16, 32, 64, 128])
+    save_dir = f'{args.save_dir}' + f'obs_{anchor_generator_cfg["octave_base_scale"]}' \
+        f'spo_{anchor_generator_cfg["scales_per_octave"]}' + f"ratios_{'_'.join([str(i) for i in anchor_generator_cfg['ratios']])}" \
+            + f"strides_{'_'.join([str(i) for i in anchor_generator_cfg['strides']])}" \
+                + f"{args.out_path.split('.')[0]}"
+    # print(save_dir)
+    if not osp.exists(save_dir):
+        os.makedirs(save_dir)
+
     anchor_generator = build_anchor_generator(anchor_generator_cfg)
     w_anchor = []
     h_anchor = []
@@ -209,7 +223,7 @@ def plot_scatter2(cfg, args):
     plt.xlabel("width")
     plt.ylabel("height")
     plt.legend(("gt", "anchors"), loc = 0)
-    plt.savefig(f'{args.image_name}')
+    plt.savefig(f'{save_dir}/{args.image_name}')
 
 def show_GT_and_anchors(cfg, args, input_shape_hw, stride, anchor_generator_cfg):
     """Visualize GT bbox and anchor bbox in object detection by drawing rectangle.

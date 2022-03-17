@@ -7,9 +7,9 @@ import json
 
 START_BOUNDING_BOX_ID = 0
 START_IMAGE_ID = 0
-# PRE_DEFINE_CATEGORIES = {"DaoXianYiWu": 0, "DiaoChe": 1, "ShiGongJiXie": 2, "TaDiao": 3, "YanHuo":4}
+PRE_DEFINE_CATEGORIES = {"DaoXianYiWu": 0, "DiaoChe": 1, "ShiGongJiXie": 2, "TaDiao": 3, "YanHuo":4}
 # PRE_DEFINE_CATEGORIES = {"GanTa": 0}
-PRE_DEFINE_CATEGORIES = {"DaoXianYiWu": 0, "DiaoChe": 1, "ShiGongJiXie": 2, "TaDiao": 3, "YanHuo":4, "GanTa":5}
+# PRE_DEFINE_CATEGORIES = {"DaoXianYiWu": 0, "DiaoChe": 1, "ShiGongJiXie": 2, "TaDiao": 3, "YanHuo":4, "GanTa":5}
 
 def get_categories(xml_files):
     '''

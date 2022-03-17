@@ -45,7 +45,7 @@ class CustomDataset(Dataset):
             If is None, ``cls.CLASSES`` will be used. Default: None.
         data_root (str, optional): Data root for ``ann_file``,
             ``img_prefix``, ``seg_prefix``, ``proposal_file`` if specified.
-        test_mode (bool, optional): If set True, annotation will not be loaded.
+        test_mode (bool, optional): If set True, annotation will not be loaded.    # TODO:如果说测试模式不加载annotations，那怎么去计算map呢？
         filter_empty_gt (bool, optional): If set true, images without bounding
             boxes of the dataset's classes will be filtered out. This option
             only works when `test_mode=False`, i.e., we never filter images
@@ -64,7 +64,7 @@ class CustomDataset(Dataset):
                  proposal_file=None,
                  test_mode=False,
                  filter_empty_gt=True,
-                 file_client_args=dict(backend='disk')):
+                 file_client_args=dict(backend='disk')):    # self代表的是实例对象的引用
         self.ann_file = ann_file
         self.data_root = data_root
         self.img_prefix = img_prefix
@@ -90,7 +90,7 @@ class CustomDataset(Dataset):
         # load annotations (and proposals)
         with self.file_client.get_local_path(self.ann_file) as local_path:
             self.data_infos = self.load_annotations(local_path)
-
+  
         if self.proposal_file is not None:
             with self.file_client.get_local_path(
                     self.proposal_file) as local_path:
@@ -241,7 +241,7 @@ class CustomDataset(Dataset):
         return self.pipeline(results)
 
     @classmethod
-    def get_classes(cls, classes=None):
+    def get_classes(cls, classes=None):    # cls代表的就是类本身
         """Get class names of current dataset.
 
         Args:
