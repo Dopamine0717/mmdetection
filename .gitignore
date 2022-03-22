@@ -134,6 +134,7 @@ work_dirs3/
 *.jpg
 *.json
 *.png
+GanTa/
 
 # Pytorch
 *.pth
