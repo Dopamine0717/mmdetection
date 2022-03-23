@@ -116,7 +116,8 @@ data
 docs/modelzoo_statistics.md
 mmdet/.mim
 # self
-checkpoints/retinanet.onnx
+anchor_analyze/
+checkpoints/
 work_dir/
 work_dirs/
 work_dirs_add_GanTa/
