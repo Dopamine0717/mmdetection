@@ -1,7 +1,7 @@
 import mmcv
 
 # TODO:将检测的结果转化成json格式，以实现半监督任务
-def result2json(results, dataset, jsonfile_prefix):
+def result2json(results, dataset, jsonfile_prefix, show_score_thr=None, image_dirname=None):
     """Convert the detection results to json annotation format.
 
     Args:
@@ -12,7 +12,7 @@ def result2json(results, dataset, jsonfile_prefix):
     """
     result_files = dict()
     if isinstance(results[0], list):
-        json_results = det2json(dataset, results)
+        json_results = det2json(dataset, results, show_score_thr, image_dirname)
         result_files['bbox'] = f'{jsonfile_prefix}.bbox.json'
         result_files['proposal'] = f'{jsonfile_prefix}.bbox.json'
         mmcv.dump(json_results, result_files['bbox'])
@@ -20,7 +20,7 @@ def result2json(results, dataset, jsonfile_prefix):
         raise TypeError('invalid type of results')
     return result_files
 
-def det2json(dataset, results):
+def det2json(dataset, results, show_score_thr, image_dirname):
     """Convert detection results to COCO json style."""
     json_dict = {
         "images":[],
@@ -36,12 +36,12 @@ def det2json(dataset, results):
             "id":cid,    # TODO:确认一下cid和cate没有搞反
             "name":cate
         }
-    json_dict['categories'].append(cat)
+        json_dict['categories'].append(cat)
 
     bbox_id = 0
     for idx in range(len(dataset)):
         image_id = dataset.img_ids[idx]
-        path = dataset.ann_file    # TODO:要除去前面的一部分路径
+        path = image_dirname    # TODO:要除去前面的一部分路径
         filename = dataset.data_infos[idx]["file_name"]
         height = dataset.data_infos[idx]["height"]
         width = dataset.data_infos[idx]["width"]
@@ -56,13 +56,19 @@ def det2json(dataset, results):
 
         result = results[idx]
         for label in range(len(result)):
-            bboxes = result[label]
+            bboxes = result[label]    # 因为result的结构是有几个类别，就有几个array，第一个array就对应label为0
             for i in range(bboxes.shape[0]):
                 bbox = dataset.xyxy2xywh(bboxes[i])    # TODO:查看这里是不是一个list？以及注意xy是否对应左上角的坐标？
                 xmin = bbox[0]
                 ymin = bbox[1]
                 o_width = bbox[2]
                 o_height = bbox[3]
+                
+                score = bboxes[i].tolist()[4]
+                if show_score_thr is not None and score <= show_score_thr:
+                    continue
+                
+                
                 category_id = dataset.cat_ids[label]
                 ann = {
                         "area":o_width * o_height,
@@ -79,7 +85,14 @@ def det2json(dataset, results):
 
     return json_dict
 
-
+def filter_lower_thr(results, score_thr):
+    '''TODO:这个函数暂时还没用'''
+    if score_thr > 0:
+        assert bboxes.shape[1] == 5
+        scores = bboxes[:, -1]
+        inds = scores > score_thr
+        bboxes = bboxes[inds, :]
+        labels = labels[inds]
 
 
 

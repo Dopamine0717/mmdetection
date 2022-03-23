@@ -20,7 +20,7 @@ def parse_args():
         help='the interval of show (ms)')
     parser.add_argument(
         '--output_dir',
-        default='/data/chenchao/MMDetection/customed_op_result/browse_dataset/transmission_line_detection/',
+        default='work_dirs_semi_supervision/balloon/semi_supervision/browse_dataset/',
         type=str,
         help='Visual image save path')
     parser.add_argument(
@@ -36,6 +36,22 @@ def parse_args():
         default='bicycle', 
         type=str,
         help='specified the category which need to visualize')
+    
+    parser.add_argument(
+        '--data-root',    # 保存的json文件所在的文件夹路径
+        default='work_dirs_semi_supervision/balloon/semi_supervision/',
+        type=str,
+        help='Visual image save path')
+    parser.add_argument(
+        '--ann-file',    # 保存的json文件
+        default='test_result2json.bbox.json',
+        type=str,
+        help='Visual image save path')
+    parser.add_argument(
+        '--img-prefix',    # json文件对应的图片所在的文件夹路径
+        default='data/balloon/val/',
+        type=str,
+        help='Visual image save path')
     
     args = parser.parse_args()
     return args
@@ -94,13 +110,16 @@ def show_coco(data_root, ann_file, img_prefix, only_bbox=True, show_all=True, ca
         category_ids = example_coco.getCatIds(category_name)
     image_ids = example_coco.getImgIds(catIds=category_ids)
 
+    save_dir = output_dir
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
     for i in range(len(image_ids)):
         plt.figure()
         image_data = example_coco.loadImgs(image_ids[i])[0]
         path = os.path.join(img_prefix, image_data['file_name'])
         image = cv2.imread(path)
         image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
-        plt.imshow(image)
+        # plt.imshow(image)
         annotation_ids = example_coco.getAnnIds(imgIds=image_data['id'], catIds=category_ids, iscrowd=None)
         annotations = example_coco.loadAnns(annotation_ids)
         if only_bbox:
@@ -108,8 +127,11 @@ def show_coco(data_root, ann_file, img_prefix, only_bbox=True, show_all=True, ca
         else:
             example_coco.showAnns(annotations)
         
-        output_dir = '/data/chenchao/MMDetection/customed_op_result/visualize_coco/' + image_data['file_name']
+        # output_dir = '/data/chenchao/MMDetection/customed_op_result/visualize_coco/' + image_data['file_name']
+        # TODO:形式还需要优化
+        output_dir = save_dir + image_data['file_name']
         plt.savefig(output_dir)
+        plt.close()    # 不加的话会报错，打开的数量太多。。。
         # plt.show()
 
 
@@ -117,9 +139,17 @@ def show_coco(data_root, ann_file, img_prefix, only_bbox=True, show_all=True, ca
 if __name__ == '__main__':
     args = parse_args()
 
-    data_root = 'data/balloon/'
-    ann_file = data_root + 'train/annotation_coco.json'
-    img_prefix = data_root + 'train/'
+    # data_root = 'data/balloon/'
+    # ann_file = data_root + 'train/annotation_coco.json'
+    # img_prefix = data_root + 'train/'
+    
+    # data_root = 'work_dirs_semi_supervision/balloon/semi_supervision/'
+    # ann_file = data_root + 'test_result2json.bbox.json'
+    # img_prefix = 'data/balloon/val/'
+    
+    data_root = args.data_root
+    ann_file = data_root + args.ann_file
+    img_prefix = args.img_prefix
     show_coco(data_root, ann_file, img_prefix, only_bbox=args.only_bbox, show_all=args.show_all, category_name=args.category_name, output_dir=args.output_dir)
 
     # # voc转化为coco后显示

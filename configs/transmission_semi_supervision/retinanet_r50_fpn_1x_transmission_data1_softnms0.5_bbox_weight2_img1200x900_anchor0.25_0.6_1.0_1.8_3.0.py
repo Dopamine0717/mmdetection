@@ -46,7 +46,7 @@ log_config = dict(
         dict(type='TensorboardLoggerHook')
     ])
 
-data_root = '/shared/xjd/DataSets/transmission_line_detection/'
+data_root = '/shared/xjd/DataSets/transmission_line_detection/'    # data_root = '/data/DataSets/transmission_line_detection/'
 dataset_type = 'OurDataset'
 classes = ("DaoXianYiWu", "DiaoChe", "ShiGongJiXie", "TaDiao", "YanHuo")
 img_norm_cfg = dict(
@@ -78,7 +78,7 @@ test_pipeline = [
 ]
 
 data = dict(
-    samples_per_gpu=16,
+    samples_per_gpu=16,    # samples_per_gpu=6,
     workers_per_gpu=8,
     persistent_workers=True,
     train=dict(

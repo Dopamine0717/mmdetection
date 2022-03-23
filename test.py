@@ -18,13 +18,12 @@ from mmdet.datasets import (build_dataloader, build_dataset,
                             replace_ImageToTensor)
 from mmdet.models import build_detector
 
-from customed_tools.result2json import result2json
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description='MMDet test (and eval) a model')
-    parser.add_argument('config', help='test config file path')
-    parser.add_argument('checkpoint', help='checkpoint file')
+    parser.add_argument('--config', default='configs/transmission_line_detection_detr/detr_r50_data1_baseline.py', help='test config file path')
+    parser.add_argument('--checkpoint', default='work_dir_luo/detr_data1_baseline/epoch_150.pth', help='checkpoint file')
     parser.add_argument(
         '--work-dir',
         help='the directory to save the file containing evaluation metrics')
@@ -35,13 +34,14 @@ def parse_args():
         help='Whether to fuse conv and bn, this will slightly increase'
         'the inference speed')
     parser.add_argument(
-        '--format-only',    # TODO:这个参数有说法吗？给定这个参数是不是不需要知道label信息？
+        '--format-only',    # TODO:这个参数有说法吗？
         action='store_true',
         help='Format the output results without perform evaluation. It is'
         'useful when you want to format the result to a specific format and '
         'submit it to the test server')
     parser.add_argument(
-        '--eval',    # TODO:如果这个参数给定的话，是不是意味着需要label计算map？
+        '--eval',
+        default='mAP',
         type=str,
         nargs='+',
         help='evaluation metrics, which depends on the dataset, e.g., "bbox",'
@@ -90,17 +90,6 @@ def parse_args():
         choices=['none', 'pytorch', 'slurm', 'mpi'],
         default='none',
         help='job launcher')
-    
-    parser.add_argument(
-        '--semi-supervision',    # 是否是半监督任务
-        action='store_true',
-        help='semi-supervision task.')
-    parser.add_argument(
-        '--image-dirname',    # 图片所在文件夹名，eg:test, train14000
-        type=str,
-        default='train14000',
-        help='image dirname')
-    
     parser.add_argument('--local_rank', type=int, default=0)
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
@@ -182,7 +171,7 @@ def main():
         json_file = osp.join(args.work_dir, f'eval_{timestamp}.json')
 
     # build the dataloader
-    dataset = build_dataset(cfg.data.test)    # dataset只是做了一些初始化，还不能获取到图像数据tensor
+    dataset = build_dataset(cfg.data.test)
     data_loader = build_dataloader(
         dataset,
         samples_per_gpu=samples_per_gpu,
@@ -209,7 +198,7 @@ def main():
     if not distributed:
         model = MMDataParallel(model, device_ids=[0])
         outputs = single_gpu_test(model, data_loader, args.show, args.show_dir,
-                                  args.show_score_thr)    # 这里的结果是经过了NMS操作的
+                                  args.show_score_thr)
     else:
         model = MMDistributedDataParallel(
             model.cuda(),
@@ -224,14 +213,8 @@ def main():
             print(f'\nwriting results to {args.out}')
             mmcv.dump(outputs, args.out)
         kwargs = {} if args.eval_options is None else args.eval_options
-        if args.format_only:    # TODO:对于提及的半监督任务，也许可以借助这个参数进行？
+        if args.format_only:
             dataset.format_results(outputs, **kwargs)
-            
-        # TODO:这里debug一个result转json，但是注意一个kwargs的一个兼容性
-        if args.semi_supervision:
-            result2json(outputs, dataset, **kwargs, show_score_thr=args.show_score_thr, image_dirname=args.image_dirname)
-        
-        
         if args.eval:
             eval_kwargs = cfg.get('evaluation', {}).copy()
             # hard-code way to remove EvalHook args

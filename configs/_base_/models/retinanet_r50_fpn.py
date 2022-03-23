@@ -5,7 +5,7 @@ model = dict(
         type='ResNet',
         depth=50,
         num_stages=4,
-        out_indices=(0, 1, 2, 3),
+        out_indices=(0, 1, 2, 3), # resnet网络输出哪几个特征图
         frozen_stages=1,
         norm_cfg=dict(type='BN', requires_grad=True),
         norm_eval=True,
@@ -13,10 +13,10 @@ model = dict(
         init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50')),
     neck=dict(
         type='FPN',
-        in_channels=[256, 512, 1024, 2048],
-        out_channels=256,
-        start_level=1,
-        add_extra_convs='on_input',
+        in_channels=[256, 512, 1024, 2048], # 输入通道数，也即backbone网络输出的特征图的通道数
+        out_channels=256,  # 输出通道数，也即做完第一个1*1卷积后的通道数，之后的3*3卷积不改变通道数
+        start_level=1,  # 从输入的第二个特征图开始
+        add_extra_convs='on_input', # 从输入的最后一张特征图（C5）做卷积 增加输出的特征图（P6,P7）
         num_outs=5),
     bbox_head=dict(
         type='RetinaHead',

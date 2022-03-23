@@ -162,7 +162,7 @@ class DETRHead(AnchorFreeHead):
             dropout=0.0,
             add_residual=False)
         self.fc_reg = Linear(self.embed_dims, 4)
-        self.query_embedding = nn.Embedding(self.num_query, self.embed_dims)
+        self.query_embedding = nn.Embedding(self.num_query, self.embed_dims)  # query
 
     def init_weights(self):
         """Initialize weights of the transformer head."""

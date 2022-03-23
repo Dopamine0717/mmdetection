@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import math
 import torch
 
 from mmdet.core.bbox.iou_calculators import bbox_overlaps
@@ -177,9 +178,54 @@ class IoUCost:
         Returns:
             torch.Tensor: iou_cost value with weight
         """
-        # overlaps: [num_bboxes, num_gt]
-        overlaps = bbox_overlaps(
-            bboxes, gt_bboxes, mode=self.iou_mode, is_aligned=False)
-        # The 1 is a constant that doesn't change the matching, so omitted.
-        iou_cost = -overlaps
+        if self.iou_mode=='giou':
+            # overlaps: [num_bboxes, num_gt]
+            overlaps = bbox_overlaps(
+                bboxes, gt_bboxes, mode=self.iou_mode, is_aligned=False)
+            # The 1 is a constant that doesn't change the matching, so omitted.
+            iou_cost = -overlaps
+        if self.iou_mode=='ciou':  #增加了ciou
+            # overlap
+            eps=1e-6
+            lt = torch.max(bboxes[:, None, :2], gt_bboxes[:, None, :2])
+            rb = torch.min(bboxes[:, None, 2:], gt_bboxes[:, None, 2:])
+            wh = (rb - lt).clamp(min=0)
+            overlap = wh[:, 0] * wh[:, 1]
+
+            # union
+            ap = (bboxes[:, 2] - bboxes[:, 0]) * (bboxes[:, 3] - bboxes[:, 1])
+            ag = (gt_bboxes[:, 2] - gt_bboxes[:, 0]) * (gt_bboxes[:, 3] - gt_bboxes[:, 1])
+            union = ap[..., None] + ag[..., None, :] - overlap + eps
+
+            # IoU
+            ious = overlap / union
+
+            # enclose area
+            enclose_x1y1 = torch.min(bboxes[:, None, :2], gt_bboxes[:, None, :2])
+            enclose_x2y2 = torch.max(bboxes[:, None, 2:], gt_bboxes[:, None, 2:])
+            enclose_wh = (enclose_x2y2 - enclose_x1y1).clamp(min=0)
+
+            cw = enclose_wh[:, 0]
+            ch = enclose_wh[:, 1]
+
+            c2 = cw**2 + ch**2 + eps
+
+            b1_x1, b1_y1 = bboxes[:, 0], bboxes[:, 1]
+            b1_x2, b1_y2 = bboxes[:, 2], bboxes[:, 3]
+            b2_x1, b2_y1 = gt_bboxes[:, 0], gt_bboxes[:, 1]
+            b2_x2, b2_y2 = gt_bboxes[:, 2], gt_bboxes[:, 3]
+
+            w1, h1 = b1_x2[..., None] - b1_x1[..., None], b1_y2[..., None] - b1_y1[..., None] + eps
+            w2, h2 = b2_x2[..., None, :] - b2_x1[..., None, :], b2_y2[..., None, :] - b2_y1[..., None, :] + eps
+
+            left = ((b2_x1[..., None, :] + b2_x2[..., None, :]) - (b1_x1[..., None] + b1_x2[..., None]))**2 / 4
+            right = ((b2_y1[..., None, :] + b2_y2[..., None, :]) - (b1_y1[..., None] + b1_y2[..., None]))**2 / 4
+            rho2 = left + right
+            # 对应公式
+            factor = 4 / math.pi**2
+            v = factor * torch.pow(torch.atan(w2 / h2) - torch.atan(w1 / h1), 2)
+
+            # CIoU
+            cious = ious - (rho2 / c2 + v**2 / (1 - ious + v))
+            iou_cost=-cious
         return iou_cost * self.weight
