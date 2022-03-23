@@ -19,15 +19,15 @@ model = dict(
         num_outs=5),
     bbox_head=dict(
         type='RetinaHead',
-        num_classes=1,
+        num_classes=5,
         in_channels=256,
         stacked_convs=4,
         feat_channels=256,
         anchor_generator=dict(
             type='AnchorGenerator',
-            octave_base_scale=4,
-            scales_per_octave=3,
-            ratios=[0.5, 1.0, 2.0],
+            octave_base_scale=2,  #注意修改
+            scales_per_octave=4, 
+            ratios=[0.2, 0.5, 1.0, 2.0, 5.0],  #Anchor setting
             strides=[8, 16, 32, 64, 128]),
         bbox_coder=dict(
             type='DeltaXYWHBBoxCoder',
@@ -39,7 +39,7 @@ model = dict(
             gamma=2.0,
             alpha=0.25,
             loss_weight=1.0),
-        loss_bbox=dict(type='L1Loss', loss_weight=1.0)),
+        loss_bbox=dict(type='L1Loss', loss_weight=2.0)),
     train_cfg=dict(
         assigner=dict(
             type='MaxIoUAssigner',
@@ -54,14 +54,14 @@ model = dict(
         nms_pre=1000,
         min_bbox_size=0,
         score_thr=0.05,
-        nms=dict(type='nms', iou_threshold=0.5),
+        nms=dict(type='soft_nms', iou_threshold=0.5),
         max_per_img=100))
-dataset_type = 'COCODataset'
-data_root = 'data/coco/'
+dataset_type = 'OurDataset'
+data_root = '/data/DataSets/transmission_line_detection/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
-    dict(type='LoadImageFromFile'),
+    dict(type='CustomLoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
     dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
@@ -75,7 +75,7 @@ train_pipeline = [
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
 ]
 test_pipeline = [
-    dict(type='LoadImageFromFile'),
+    dict(type='CustomLoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
         img_scale=(1333, 800),
@@ -94,14 +94,15 @@ test_pipeline = [
         ])
 ]
 data = dict(
-    samples_per_gpu=4,
+    samples_per_gpu=6,
     workers_per_gpu=8,
     train=dict(
-        type='CocoDataset',
-        ann_file='data/balloon/train/annotation_coco.json',
-        img_prefix='data/balloon/train/',
+        type='OurDataset',
+        ann_file=
+        '/data/DataSets/transmission_line_detection/instances_train.json',
+        img_prefix='/data/DataSets/transmission_line_detection/',
         pipeline=[
-            dict(type='LoadImageFromFile'),
+            dict(type='CustomLoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
             dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
             dict(type='RandomFlip', flip_ratio=0.5),
@@ -114,13 +115,15 @@ data = dict(
             dict(type='DefaultFormatBundle'),
             dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
         ],
-        classes=('balloon', )),
+        classes=('DaoXianYiWu', 'DiaoChe', 'ShiGongJiXie', 'TaDiao',
+                 'YanHuo')),
     val=dict(
-        type='CocoDataset',
-        ann_file='data/balloon/val/annotation_coco.json',
-        img_prefix='data/balloon/val/',
+        type='OurDataset',
+        ann_file=
+        '/data/DataSets/transmission_line_detection/instances_test.json',
+        img_prefix='/data/DataSets/transmission_line_detection/',
         pipeline=[
-            dict(type='LoadImageFromFile'),
+            dict(type='CustomLoadImageFromFile'),
             dict(
                 type='MultiScaleFlipAug',
                 img_scale=(1333, 800),
@@ -138,16 +141,18 @@ data = dict(
                     dict(type='Collect', keys=['img'])
                 ])
         ],
-        classes=('balloon', )),
+        classes=('DaoXianYiWu', 'DiaoChe', 'ShiGongJiXie', 'TaDiao',
+                 'YanHuo')),
     test=dict(
-        type='CocoDataset',
-        ann_file='data/balloon/val/annotation_coco.json',
-        img_prefix='data/balloon/val/',
+        type='OurDataset',
+        ann_file=
+        '/data/DataSets/transmission_line_detection/instances_test.json',  #data1
+        img_prefix='/data/DataSets/transmission_line_detection/',
         pipeline=[
-            dict(type='LoadImageFromFile'),
+            dict(type='CustomLoadImageFromFile'),
             dict(
                 type='MultiScaleFlipAug',
-                img_scale=(1333, 800),
+                img_scale=(1333, 800),  #img_scale
                 flip=False,
                 transforms=[
                     dict(type='Resize', keep_ratio=True),
@@ -162,28 +167,30 @@ data = dict(
                     dict(type='Collect', keys=['img'])
                 ])
         ],
-        classes=('balloon', )))
-evaluation = dict(interval=1, metric='bbox')
-optimizer = dict(type='SGD', lr=0.005, momentum=0.9, weight_decay=0.0001)
+        classes=('DaoXianYiWu', 'DiaoChe', 'ShiGongJiXie', 'TaDiao',
+                 'YanHuo')),
+    persistent_workers=True)
+evaluation = dict(interval=1, metric='bbox')  #注意修改
+optimizer = dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=None)
 lr_config = dict(
     policy='step',
     warmup='linear',
-    warmup_iters=10,
+    warmup_iters=400,  #warmup_iters
     warmup_ratio=0.001,
-    step=[30, 40])
-runner = dict(type='EpochBasedRunner', max_epochs=50)
-checkpoint_config = dict(interval=10)
+    step=[12, 16])  #Lr Schuster 注意修改
+runner = dict(type='EpochBasedRunner', max_epochs=20)   #epoch
+checkpoint_config = dict(interval=5)  #注意修改
 log_config = dict(
-    interval=1,
+    interval=50,
     hooks=[dict(type='TextLoggerHook'),
            dict(type='TensorboardLoggerHook')])
 custom_hooks = [dict(type='NumClassCheckHook')]
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = 'checkpoints/retinanet_r50_fpn_1x_coco_20200130-c2398f9e.pth'
-resume_from = None
+resume_from = None  #None
 workflow = [('train', 1)]
-classes = ('balloon', )
-work_dir = 'work_dirs_test/balloon'
-gpu_ids = [1]
+classes = ('DaoXianYiWu', 'DiaoChe', 'ShiGongJiXie', 'TaDiao', 'YanHuo')
+work_dir = 'work_dirs3/data1_softnms0.5_bbox_weight2_obs2_spo4'  #workdir
+gpu_ids = range(0, 4)

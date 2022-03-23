@@ -1,45 +1,43 @@
+# model settings
 model = dict(
-    type='RetinaNet',
+    type='FCOS',
     backbone=dict(
         type='ResNet',
         depth=50,
         num_stages=4,
         out_indices=(0, 1, 2, 3),
         frozen_stages=1,
-        norm_cfg=dict(type='BN', requires_grad=True),
+        norm_cfg=dict(type='BN', requires_grad=False),
         norm_eval=True,
-        style='pytorch',
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50')),
+        style='caffe',
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='open-mmlab://detectron/resnet50_caffe')),
     neck=dict(
         type='FPN',
         in_channels=[256, 512, 1024, 2048],
         out_channels=256,
         start_level=1,
-        add_extra_convs='on_input',
-        num_outs=5),
+        add_extra_convs='on_output',  # use P5
+        num_outs=5,
+        relu_before_extra_convs=True),
     bbox_head=dict(
-        type='RetinaHead',
-        num_classes=1,
+        type='FCOSHead',
+        num_classes=5,  # 注意
         in_channels=256,
         stacked_convs=4,
         feat_channels=256,
-        anchor_generator=dict(
-            type='AnchorGenerator',
-            octave_base_scale=4,
-            scales_per_octave=3,
-            ratios=[0.5, 1.0, 2.0],
-            strides=[8, 16, 32, 64, 128]),
-        bbox_coder=dict(
-            type='DeltaXYWHBBoxCoder',
-            target_means=[0.0, 0.0, 0.0, 0.0],
-            target_stds=[1.0, 1.0, 1.0, 1.0]),
+        strides=[8, 16, 32, 64, 128],
         loss_cls=dict(
             type='FocalLoss',
             use_sigmoid=True,
             gamma=2.0,
             alpha=0.25,
             loss_weight=1.0),
-        loss_bbox=dict(type='L1Loss', loss_weight=1.0)),
+        loss_bbox=dict(type='IoULoss', loss_weight=1.0),
+        loss_centerness=dict(
+            type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0)),
+    # training and testing settings
     train_cfg=dict(
         assigner=dict(
             type='MaxIoUAssigner',
@@ -56,26 +54,23 @@ model = dict(
         score_thr=0.05,
         nms=dict(type='nms', iou_threshold=0.5),
         max_per_img=100))
-dataset_type = 'COCODataset'
-data_root = 'data/coco/'
+
+dataset_type = 'OurDataset'
+data_root = '/data/DataSets/transmission_line_detection/'
 img_norm_cfg = dict(
-    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+    mean=[103.530, 116.280, 123.675], std=[1.0, 1.0, 1.0], to_rgb=False)
 train_pipeline = [
-    dict(type='LoadImageFromFile'),
+    dict(type='CustomLoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
     dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
-    dict(
-        type='Normalize',
-        mean=[123.675, 116.28, 103.53],
-        std=[58.395, 57.12, 57.375],
-        to_rgb=True),
+    dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
     dict(type='DefaultFormatBundle'),
-    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
+    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels']),
 ]
 test_pipeline = [
-    dict(type='LoadImageFromFile'),
+    dict(type='CustomLoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
         img_scale=(1333, 800),
@@ -83,44 +78,41 @@ test_pipeline = [
         transforms=[
             dict(type='Resize', keep_ratio=True),
             dict(type='RandomFlip'),
-            dict(
-                type='Normalize',
-                mean=[123.675, 116.28, 103.53],
-                std=[58.395, 57.12, 57.375],
-                to_rgb=True),
+            dict(type='Normalize', **img_norm_cfg),
             dict(type='Pad', size_divisor=32),
             dict(type='ImageToTensor', keys=['img']),
-            dict(type='Collect', keys=['img'])
+            dict(type='Collect', keys=['img']),
         ])
 ]
 data = dict(
-    samples_per_gpu=4,
+    samples_per_gpu=6,
     workers_per_gpu=8,
     train=dict(
-        type='CocoDataset',
-        ann_file='data/balloon/train/annotation_coco.json',
-        img_prefix='data/balloon/train/',
+        type='OurDataset',
+        ann_file=
+        '/data/DataSets/transmission_line_detection/self_labeled_GanTa_train.json',  # 全都有杆塔的数据集
+        # '/data/DataSets/transmission_line_detection/instances_train30462.json',  # data2
+        img_prefix='/data/DataSets/transmission_line_detection/',
         pipeline=[
-            dict(type='LoadImageFromFile'),
+            dict(type='CustomLoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
             dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
             dict(type='RandomFlip', flip_ratio=0.5),
             dict(
-                type='Normalize',
-                mean=[123.675, 116.28, 103.53],
-                std=[58.395, 57.12, 57.375],
-                to_rgb=True),
+                type='Normalize', **img_norm_cfg),
             dict(type='Pad', size_divisor=32),
             dict(type='DefaultFormatBundle'),
             dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
         ],
-        classes=('balloon', )),
+        classes=('DaoXianYiWu', 'DiaoChe', 'ShiGongJiXie', 'TaDiao',
+                 'YanHuo')),
     val=dict(
-        type='CocoDataset',
-        ann_file='data/balloon/val/annotation_coco.json',
-        img_prefix='data/balloon/val/',
+        type='OurDataset',
+        ann_file=
+        '/data/DataSets/transmission_line_detection/test_add_GanTa.json',  #3490（仅有200张图有杆塔label）
+        img_prefix='/data/DataSets/transmission_line_detection/',
         pipeline=[
-            dict(type='LoadImageFromFile'),
+            dict(type='CustomLoadImageFromFile'),
             dict(
                 type='MultiScaleFlipAug',
                 img_scale=(1333, 800),
@@ -129,61 +121,60 @@ data = dict(
                     dict(type='Resize', keep_ratio=True),
                     dict(type='RandomFlip'),
                     dict(
-                        type='Normalize',
-                        mean=[123.675, 116.28, 103.53],
-                        std=[58.395, 57.12, 57.375],
-                        to_rgb=True),
+                        type='Normalize', **img_norm_cfg),
                     dict(type='Pad', size_divisor=32),
                     dict(type='ImageToTensor', keys=['img']),
                     dict(type='Collect', keys=['img'])
                 ])
         ],
-        classes=('balloon', )),
+        classes=('DaoXianYiWu', 'DiaoChe', 'ShiGongJiXie', 'TaDiao',
+                 'YanHuo')),
     test=dict(
-        type='CocoDataset',
-        ann_file='data/balloon/val/annotation_coco.json',
-        img_prefix='data/balloon/val/',
+        type='OurDataset',
+        ann_file=
+        '/data/DataSets/transmission_line_detection/test_add_GanTa.json',  #3490（仅有200张图有杆塔label） 
+        img_prefix='/data/DataSets/transmission_line_detection/',
         pipeline=[
-            dict(type='LoadImageFromFile'),
+            dict(type='CustomLoadImageFromFile'),
             dict(
                 type='MultiScaleFlipAug',
-                img_scale=(1333, 800),
+                img_scale=(1333, 800),  #img_scale
                 flip=False,
                 transforms=[
                     dict(type='Resize', keep_ratio=True),
                     dict(type='RandomFlip'),
                     dict(
-                        type='Normalize',
-                        mean=[123.675, 116.28, 103.53],
-                        std=[58.395, 57.12, 57.375],
-                        to_rgb=True),
+                        type='Normalize', **img_norm_cfg),
                     dict(type='Pad', size_divisor=32),
                     dict(type='ImageToTensor', keys=['img']),
                     dict(type='Collect', keys=['img'])
                 ])
         ],
-        classes=('balloon', )))
-evaluation = dict(interval=1, metric='bbox')
-optimizer = dict(type='SGD', lr=0.005, momentum=0.9, weight_decay=0.0001)
+        classes=('DaoXianYiWu', 'DiaoChe', 'ShiGongJiXie', 'TaDiao',
+                 'YanHuo')),
+    persistent_workers=True)
+evaluation = dict(interval=1, metric='bbox')  # 注意根据epoch修改interval
+
+optimizer = dict(type='SGD', lr=0.05, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=None)
 lr_config = dict(
     policy='step',
     warmup='linear',
-    warmup_iters=10,
+    warmup_iters=400,  # warmup_iters
     warmup_ratio=0.001,
-    step=[30, 40])
-runner = dict(type='EpochBasedRunner', max_epochs=50)
-checkpoint_config = dict(interval=10)
+    step=[12, 16])  #Lr Schuster 注意修改
+runner = dict(type='EpochBasedRunner', max_epochs=20)
+checkpoint_config = dict(interval=5)  # 注意根据epoch修改interval
 log_config = dict(
-    interval=1,
+    interval=50,
     hooks=[dict(type='TextLoggerHook'),
            dict(type='TensorboardLoggerHook')])
 custom_hooks = [dict(type='NumClassCheckHook')]
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = 'checkpoints/retinanet_r50_fpn_1x_coco_20200130-c2398f9e.pth'
-resume_from = None
+load_from = 'checkpoints/fcos_r50_caffe_fpn_gn-head_1x_coco-821213aa.pth'  # checkpoint
+resume_from = None  # None
 workflow = [('train', 1)]
-classes = ('balloon', )
-work_dir = 'work_dirs_test/balloon'
-gpu_ids = [1]
+classes = ('DaoXianYiWu', 'DiaoChe', 'ShiGongJiXie', 'TaDiao', 'YanHuo')
+work_dir = 'work_dir_luo/fcos_lr0.05_epoch20_new'  # workdir
+gpu_ids = range(0, 4)

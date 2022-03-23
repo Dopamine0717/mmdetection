@@ -117,6 +117,21 @@ docs/modelzoo_statistics.md
 mmdet/.mim
 work_dirs/
 
+# self
+torch/*
+work_dir/*
+work_dir_luo/*
+work_dirs_semi_supervision/*
+work_dirs_test/*
+work_dirs2/*
+work_dirs3/*
+*.npy
+*.jpg
+*.json
+*.png
+*.jpg
+*.pkl
+
 # Pytorch
 *.pth
 *.py~

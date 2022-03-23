@@ -18,13 +18,12 @@ from mmdet.datasets import (build_dataloader, build_dataset,
                             replace_ImageToTensor)
 from mmdet.models import build_detector
 
-from customed_tools.result2json import result2json
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description='MMDet test (and eval) a model')
-    parser.add_argument('config', help='test config file path')
-    parser.add_argument('checkpoint', help='checkpoint file')
+    parser.add_argument('--config', default='configs/transmission_line_detection_detr/detr_r50_data1_baseline.py', help='test config file path')
+    parser.add_argument('--checkpoint', default='work_dir_luo/detr_data1_baseline/epoch_150.pth', help='checkpoint file')
     parser.add_argument(
         '--work-dir',
         help='the directory to save the file containing evaluation metrics')
@@ -42,6 +41,7 @@ def parse_args():
         'submit it to the test server')
     parser.add_argument(
         '--eval',
+        default='mAP',
         type=str,
         nargs='+',
         help='evaluation metrics, which depends on the dataset, e.g., "bbox",'
@@ -90,17 +90,6 @@ def parse_args():
         choices=['none', 'pytorch', 'slurm', 'mpi'],
         default='none',
         help='job launcher')
-    
-    parser.add_argument(
-        '--semi-supervision',    # 是否是半监督任务
-        action='store_true',
-        help='semi-supervision task.')
-    parser.add_argument(
-        '--image-dirname',    # 图片所在文件夹名，eg:test, train14000
-        type=str,
-        default='train14000',
-        help='image dirname')
-    
     parser.add_argument('--local_rank', type=int, default=0)
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
@@ -209,7 +198,7 @@ def main():
     if not distributed:
         model = MMDataParallel(model, device_ids=[0])
         outputs = single_gpu_test(model, data_loader, args.show, args.show_dir,
-                                  args.show_score_thr)    # 这里的结果是经过了NMS操作的
+                                  args.show_score_thr)
     else:
         model = MMDistributedDataParallel(
             model.cuda(),
@@ -226,12 +215,6 @@ def main():
         kwargs = {} if args.eval_options is None else args.eval_options
         if args.format_only:
             dataset.format_results(outputs, **kwargs)
-            
-        # TODO:这里debug一个result转json，但是注意一个kwargs的一个兼容性
-        if args.semi_supervision:
-            result2json(outputs, dataset, **kwargs, show_score_thr=args.show_score_thr, image_dirname=args.image_dirname)
-        
-        
         if args.eval:
             eval_kwargs = cfg.get('evaluation', {}).copy()
             # hard-code way to remove EvalHook args

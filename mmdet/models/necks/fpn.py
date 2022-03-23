@@ -107,7 +107,7 @@ class FPN(BaseModule):
         self.fpn_convs = nn.ModuleList()
 
         for i in range(self.start_level, self.backbone_end_level):
-            l_conv = ConvModule(
+            l_conv = ConvModule(  # 1*1卷积
                 in_channels[i],
                 out_channels,
                 1,
@@ -115,7 +115,7 @@ class FPN(BaseModule):
                 norm_cfg=norm_cfg if not self.no_norm_on_lateral else None,
                 act_cfg=act_cfg,
                 inplace=False)
-            fpn_conv = ConvModule(
+            fpn_conv = ConvModule(  # 3*3卷积
                 out_channels,
                 out_channels,
                 3,
@@ -155,7 +155,7 @@ class FPN(BaseModule):
 
         # build laterals
         laterals = [
-            lateral_conv(inputs[i + self.start_level])
+            lateral_conv(inputs[i + self.start_level])  # 从第start_level特征层开始，每层做1*1卷积
             for i, lateral_conv in enumerate(self.lateral_convs)
         ]
 

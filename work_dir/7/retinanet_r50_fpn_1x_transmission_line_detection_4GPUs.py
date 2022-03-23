@@ -27,7 +27,7 @@ model = dict(
             type='AnchorGenerator',
             octave_base_scale=4,
             scales_per_octave=3,
-            ratios=[0.2, 0.5, 1.0, 2.0, 5.0],
+            ratios=[0.2, 0.5, 1.0, 2.0, 5.0], #Anchor setting
             strides=[8, 16, 32, 64, 128]),
         bbox_coder=dict(
             type='DeltaXYWHBBoxCoder',
@@ -56,8 +56,8 @@ model = dict(
         score_thr=0.05,
         nms=dict(type='nms', iou_threshold=0.5),
         max_per_img=100))
-dataset_type = 'COCODataset'
-data_root = 'data/coco/'
+dataset_type = 'OurDataset'
+data_root = '/data/DataSets/transmission_line_detection/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
