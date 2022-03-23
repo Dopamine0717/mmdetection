@@ -133,7 +133,7 @@ class FPN(BaseModule):
         if self.add_extra_convs and extra_levels >= 1:
             for i in range(extra_levels):
                 if i == 0 and self.add_extra_convs == 'on_input':
-                    in_channels = self.in_channels[self.backbone_end_level - 1]
+                    in_channels = self.in_channels[self.backbone_end_level - 1]  # 输入的最后一个特征图
                 else:
                     in_channels = out_channels
                 extra_fpn_conv = ConvModule(
@@ -161,7 +161,7 @@ class FPN(BaseModule):
 
         # build top-down path
         used_backbone_levels = len(laterals)
-        for i in range(used_backbone_levels - 1, 0, -1):
+        for i in range(used_backbone_levels - 1, 0, -1):  # 进行umsample并相加？
             # In some cases, fixing `scale factor` (e.g. 2) is preferred, but
             #  it cannot co-exist with `size` in `F.interpolate`.
             if 'scale_factor' in self.upsample_cfg:

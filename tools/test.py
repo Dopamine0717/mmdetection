@@ -35,13 +35,13 @@ def parse_args():
         help='Whether to fuse conv and bn, this will slightly increase'
         'the inference speed')
     parser.add_argument(
-        '--format-only',    # TODO:这个参数有说法吗？
+        '--format-only',    # TODO:这个参数有说法吗？给定这个参数是不是不需要知道label信息？
         action='store_true',
         help='Format the output results without perform evaluation. It is'
         'useful when you want to format the result to a specific format and '
         'submit it to the test server')
     parser.add_argument(
-        '--eval',
+        '--eval',    # TODO:如果这个参数给定的话，是不是意味着需要label计算map？
         type=str,
         nargs='+',
         help='evaluation metrics, which depends on the dataset, e.g., "bbox",'
@@ -182,7 +182,7 @@ def main():
         json_file = osp.join(args.work_dir, f'eval_{timestamp}.json')
 
     # build the dataloader
-    dataset = build_dataset(cfg.data.test)
+    dataset = build_dataset(cfg.data.test)    # dataset只是做了一些初始化，还不能获取到图像数据tensor
     data_loader = build_dataloader(
         dataset,
         samples_per_gpu=samples_per_gpu,
@@ -224,7 +224,7 @@ def main():
             print(f'\nwriting results to {args.out}')
             mmcv.dump(outputs, args.out)
         kwargs = {} if args.eval_options is None else args.eval_options
-        if args.format_only:
+        if args.format_only:    # TODO:对于提及的半监督任务，也许可以借助这个参数进行？
             dataset.format_results(outputs, **kwargs)
             
         # TODO:这里debug一个result转json，但是注意一个kwargs的一个兼容性

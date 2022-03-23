@@ -28,7 +28,7 @@ model = dict(
 
 
 load_from = 'checkpoints/retinanet_r50_fpn_1x_coco_20200130-c2398f9e.pth'
-optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.05, momentum=0.9, weight_decay=0.0001)
 lr_config = dict(
     policy='step',
     warmup='linear',
@@ -40,13 +40,13 @@ checkpoint_config = dict(interval=5)
 evaluation = dict(interval=1, metric='bbox')
 
 log_config = dict(
-    interval=40,
+    interval=20,
     hooks=[
         dict(type='TextLoggerHook'),
         dict(type='TensorboardLoggerHook')
     ])
 
-data_root = '/data/DataSets/transmission_line_detection/'
+data_root = '/shared/xjd/DataSets/transmission_line_detection/'    # data_root = '/data/DataSets/transmission_line_detection/'
 dataset_type = 'OurDataset'
 classes = ("DaoXianYiWu", "DiaoChe", "ShiGongJiXie", "TaDiao", "YanHuo")
 img_norm_cfg = dict(
@@ -78,7 +78,7 @@ test_pipeline = [
 ]
 
 data = dict(
-    samples_per_gpu=6,
+    samples_per_gpu=16,    # samples_per_gpu=6,
     workers_per_gpu=8,
     persistent_workers=True,
     train=dict(

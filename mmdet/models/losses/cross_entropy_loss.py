@@ -237,6 +237,7 @@ class CrossEntropyLoss(nn.Module):
         if self.class_weight is not None:
             class_weight = cls_score.new_tensor(
                 self.class_weight, device=cls_score.device)
+            # class_weight = cls_score.clone().detach().requires_grad_(True)    # 自己加的
         else:
             class_weight = None
         loss_cls = self.loss_weight * self.cls_criterion(

@@ -37,7 +37,7 @@ test_pipeline = [
         ])
 ]
 data = dict(
-    samples_per_gpu=4,
+    samples_per_gpu=16,
     workers_per_gpu=8,
     train=dict(
         img_prefix='data/balloon/train/',
@@ -55,7 +55,7 @@ evaluation = dict(interval=1, metric='bbox')
 
 
 # optimizer
-optimizer = dict(type='SGD', lr=0.005, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(
@@ -82,6 +82,3 @@ log_level = 'INFO'
 load_from = 'checkpoints/retinanet_r50_fpn_1x_coco_20200130-c2398f9e.pth'
 resume_from = None
 workflow = [('train', 1)]
-
-
-

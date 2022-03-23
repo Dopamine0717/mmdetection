@@ -8,6 +8,8 @@ import json
 START_BOUNDING_BOX_ID = 0
 START_IMAGE_ID = 0
 PRE_DEFINE_CATEGORIES = {"DaoXianYiWu": 0, "DiaoChe": 1, "ShiGongJiXie": 2, "TaDiao": 3, "YanHuo":4}
+# PRE_DEFINE_CATEGORIES = {"GanTa": 0}
+# PRE_DEFINE_CATEGORIES = {"DaoXianYiWu": 0, "DiaoChe": 1, "ShiGongJiXie": 2, "TaDiao": 3, "YanHuo":4, "GanTa":5}
 
 def get_categories(xml_files):
     '''
@@ -126,8 +128,9 @@ def convert(xml_files, json_file):
         for obj in get(root, 'object'):
             category = get_and_check(obj, 'name', 1).text
             if category not in categories:    # 事实上，如果只想对已经指定的某些类别进行转化，这里只需pass就好，不需要创建新的类别映射
-                new_id = len(categories)
-                categories[category] = new_id
+                # new_id = len(categories)
+                # categories[category] = new_id
+                continue
             
             category_id = categories[category]
             bndbox = get_and_check(obj, 'bndbox', 1)
@@ -136,8 +139,8 @@ def convert(xml_files, json_file):
             ymin = int(float(get_and_check(bndbox, 'ymin', 1).text))
             xmax = int(float(get_and_check(bndbox, 'xmax', 1).text))
             ymax = int(float(get_and_check(bndbox, 'ymax', 1).text))
-            assert xmax > xmin
-            assert ymax > ymin
+            assert xmax > xmin, f'{xml_file}'
+            assert ymax > ymin, f'{xml_file}'
             o_width = abs(xmax - xmin)
             o_height = abs(ymax - ymin)
             ann = {
@@ -172,13 +175,37 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Convert xml annotations to COCO format!')
     parser.add_argument(
         "--xml-dir", 
-        default='/shared/xjd/DataSets/transmission_line_detection/test_demo_xml',
+        default='/shared/xjd/DataSets/transmission_line_detection/self_labeled_xml',
         type=str,
         help='Directory path to xml files.'
         )
     parser.add_argument(
+        "--xml-dir2", 
+        default='/shared/xjd/DataSets/transmission_line_detection/test',
+        type=str,
+        help='Directory path to xml files.'
+        )
+    # parser.add_argument(
+    #     "--xml-dir3", 
+    #     default='/shared/xjd/DataSets/transmission_line_detection/test_xml',
+    #     type=str,
+    #     help='Directory path to xml files.'
+    #     )
+    # parser.add_argument(
+    #     "--xml-dir4", 
+    #     default='/shared/xjd/DataSets/transmission_line_detection/train14000_xml',
+    #     type=str,
+    #     help='Directory path to xml files.'
+    #     )
+    parser.add_argument(
         "--json-file",
-        default='/shared/xjd/DataSets/transmission_line_detection/test_demo.json',
+        default='/shared/xjd/DataSets/transmission_line_detection/train_6cates_1280.json',
+        type=str,
+        help='Output COCO format json file.'
+        )
+    parser.add_argument(
+        "--json-file2",
+        default='/shared/xjd/DataSets/transmission_line_detection/test_6cates_3490.json',
         type=str,
         help='Output COCO format json file.'
         )
@@ -187,8 +214,19 @@ if __name__ == '__main__':
     
     # 下面的代码只有在结合两个来源的数据的时候用到
     # xml_files2 = glob.glob(os.path.join('/shared/xjd/DataSets/transmission_line_detection/train14000_xml', "*.xml"))
-    # xml_files.extend(xml_files2)
+    # xml_files2 = glob.glob(os.path.join(args.xml_dir2, "*.xml"))
+    # xml_files.extend(xml_files2[:-200])
+    # xml_files3 = glob.glob(os.path.join(args.xml_dir3, "*.xml"))
+    # xml_files3.extend(xml_files2[-200:])
+
+    # 大数据集时才需要下面的代码
+    # xml_files4 = glob.glob(os.path.join(args.xml_dir4, "*.xml"))
+    # xml_files.extend(xml_files4)
 
     print(f"Number of xml files:{len(xml_files)}")
     convert(xml_files, args.json_file)
     print(f"Success:{args.json_file}")
+
+    # print(f"Number of xml files:{len(xml_files3)}")
+    # convert(xml_files3, args.json_file2)
+    # print(f"Success:{args.json_file2}")

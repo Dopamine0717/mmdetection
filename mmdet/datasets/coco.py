@@ -21,6 +21,7 @@ from .custom import CustomDataset
 
 @DATASETS.register_module()
 class CocoDataset(CustomDataset):
+    '''如果在子类中需要父类的构造方法就需要显式地调用父类的构造方法，或者不重写父类的构造方法。'''
 
     CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
                'train', 'truck', 'boat', 'traffic light', 'fire hydrant',

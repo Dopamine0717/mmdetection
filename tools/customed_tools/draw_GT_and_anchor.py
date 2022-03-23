@@ -33,7 +33,7 @@ def parse_args():
         type=str,
         default='scatter30462.png',
         help='save GT data npy path')
-    parser.add_argument(  # When there is a local cache, whether to use it without going through the datalayer again, saving time
+    parser.add_argument(  # When there is a local cache, whether to use it without going through the datalayer again
         '--use_local',
         type=bool,
         default=True,
@@ -113,7 +113,6 @@ def get_all_GTs(cfg, args):
 
 def get_gt_wh(cfg, args):
     """Get all the ground truths in the dataset.
-
     Args:
         cfg: Config of model.
         args: Parameters passed in from the command line.
@@ -149,7 +148,6 @@ def get_gt_wh(cfg, args):
 
 def plot_scatter(cfg, args):
     """plot scatter of the gt and anchor.
-
     Args:
         cfg: Config of model.
         args: Parameters passed in from the command line.
@@ -179,7 +177,6 @@ def plot_scatter(cfg, args):
 
 def plot_scatter2(cfg, args):
     """plot scatter of the gt and anchor.
-
     Args:
         cfg: Config of model.
         args: Parameters passed in from the command line.
@@ -188,7 +185,7 @@ def plot_scatter2(cfg, args):
         type='AnchorGenerator',
         octave_base_scale=2,
         scales_per_octave=3,
-        ratios=[0.15, 0.35, 0.6, 1.0, 1.75, 3.5],
+        ratios=[0.2, 0.5, 1.0, 2.0, 5.0],
         strides=[8, 16, 32, 64, 128])
     anchor_generator = build_anchor_generator(anchor_generator_cfg)
     w_anchor = []
@@ -207,7 +204,7 @@ def plot_scatter2(cfg, args):
     h_gt = all_GT[:,3] - all_GT[:,1]
     plt.scatter(w_gt, h_gt, color='#88c999', alpha=0.1)
     plt.scatter(w_anchor, h_anchor, color='hotpink', marker='x')
-    
+
     plt.title("GT and anchors")
     plt.xlabel("width")
     plt.ylabel("height")
@@ -419,7 +416,7 @@ def demo_retinanet(cfg, args, input_shape_hw):
     stride = [8, 16, 32, 64, 128]
     anchor_generator_cfg = dict(
         type='AnchorGenerator',
-        octave_base_scale=4,
+        octave_base_scale=2,
         scales_per_octave=3,
         ratios=[0.5, 1.0, 2.0],
         strides=stride)
@@ -430,8 +427,10 @@ if __name__ == '__main__':
     cfg = Config.fromfile(args.config)
     # input_shape_hw = (1333, 1333, 3)
     # demo_retinanet(cfg, args, input_shape_hw)
-    
+
     plot_scatter2(cfg, args)
+    
+
 
 
 

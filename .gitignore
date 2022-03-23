@@ -115,7 +115,26 @@ data
 *.log.json
 docs/modelzoo_statistics.md
 mmdet/.mim
+# self
+work_dir/
 work_dirs/
+work_dirs_add_GanTa/
+work_dirs_atss/
+work_dirs_cascade_rcnn/
+work_dirs_detr/
+work_dirs_faster_rcnn/
+work_dirs_fcos/
+work_dirs_retinanet/
+work_dirs_semi_supervision/
+work_dirs_test/
+work_dirs_yolof/
+work_dirs2/
+work_dirs3/
+*.npy
+*.jpg
+*.json
+*.png
+GanTa/
 
 # self
 torch/*

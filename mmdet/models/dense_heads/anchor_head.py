@@ -99,7 +99,7 @@ class AnchorHead(BaseDenseHead, BBoxTestMixin):
                     sampler_cfg = dict(type='PseudoSampler')
             else:
                 self.sampling = False
-                sampler_cfg = dict(type='PseudoSampler')
+                sampler_cfg = dict(type='PseudoSampler')    # 实际上这个什么操作也不做？
             self.sampler = build_sampler(sampler_cfg, context=self)
         self.fp16_enabled = False
 
