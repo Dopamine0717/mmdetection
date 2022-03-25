@@ -25,7 +25,7 @@ def modify_one_xml(xml_path):
             pass
     tree.write(xml_path)
 
-path = '/shared/xjd/DataSets/transmission_line_detection/train14000/Annotations'
+path = '/shared/xjd/DataSets/transmission_line_detection/train14000_xml'
 filelist = os.listdir(path)
 xml_name_list = [filename for filename in filelist if filename[-3:] == 'xml']
 print(len(xml_name_list))

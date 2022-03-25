@@ -42,6 +42,6 @@ def gen_classes(xml_path):
     
     return classes
 
-xml_path = '/data/DataSets/transmission_line_detection/train14000_xml'
+xml_path = '/shared/xjd/DataSets/transmission_line_detection/train14000_xml'
 classes = gen_classes(xml_path)
 print(classes)

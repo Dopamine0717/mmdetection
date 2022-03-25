@@ -119,7 +119,7 @@ def show_coco(data_root, ann_file, img_prefix, only_bbox=True, show_all=True, ca
         path = os.path.join(img_prefix, image_data['file_name'])
         image = cv2.imread(path)
         image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
-        # plt.imshow(image)
+        plt.imshow(image)
         annotation_ids = example_coco.getAnnIds(imgIds=image_data['id'], catIds=category_ids, iscrowd=None)
         annotations = example_coco.loadAnns(annotation_ids)
         if only_bbox:
