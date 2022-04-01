@@ -189,7 +189,7 @@ def plot_scatter2(cfg, args):
     """
     anchor_generator_cfg = dict(
         type='AnchorGenerator',
-        octave_base_scale=4,
+        octave_base_scale=3,
         scales_per_octave=3,
         ratios=[0.25, 0.6, 1.0, 1.8, 3.0],
         strides=[8, 16, 32, 64, 128])

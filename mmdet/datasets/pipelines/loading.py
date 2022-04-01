@@ -32,9 +32,9 @@ class CustomLoadImageFromFile:
             self.file_client = mmcv.FileClient(**self.file_client_args)
 
         if results['img_prefix'] is not None:
-            filename = osp.join(results['img_prefix'],
-                                results['img_info']['path'],    # 主要就是加了这么一句话
-                                results['img_info']['filename'])
+            filename = osp.join(results['img_prefix'],     # /shared/xjd/DataSets/transmission_line_detection/
+                                results['img_info']['path'],    # 主要就是加了这么一句话    train
+                                results['img_info']['filename'])    # Diaoche.jpg
         else:
             filename = results['img_info']['filename']
 
