@@ -27,17 +27,17 @@ def parse_args():
     parser.add_argument(
         '--out_path',
         type=str,
-        default='GT_data.npy',
+        default='train_7dirs_GT_data.npy',
         help='save GT data npy path')
     parser.add_argument(
         '--image-name',
         type=str,
-        default='scatter30462.png',
+        default='scatter_train_7dirs.png',
         help='save GT data npy path')
     parser.add_argument(
         '--save-dir',
         type=str,
-        default='/shared/xjd/chenchao/mmdetection/anchor_analyze/',
+        default='/data/chenchao/personal_code/mmdetection/anchor_analyze/',
         help='save dir')
     parser.add_argument(  # When there is a local cache, whether to use it without going through the datalayer again
         '--use_local',

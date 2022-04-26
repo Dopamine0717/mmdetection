@@ -36,7 +36,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "--dir-path", 
         type=str, 
-        default="/shared/xjd/DataSets/transmission_line_detection/train14000", 
+        default="/data/DataSets/transmission_line_detection/test_xml2", 
         help="dir path"
         )
     args = parser.parse_args()

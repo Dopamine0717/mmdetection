@@ -3,13 +3,14 @@ import os
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element
 import json
+import random
 
 
 START_BOUNDING_BOX_ID = 0
 START_IMAGE_ID = 0
-PRE_DEFINE_CATEGORIES = {"DaoXianYiWu": 0, "DiaoChe": 1, "ShiGongJiXie": 2, "TaDiao": 3, "YanHuo":4}
+# PRE_DEFINE_CATEGORIES = {"DaoXianYiWu": 0, "DiaoChe": 1, "ShiGongJiXie": 2, "TaDiao": 3, "YanHuo":4}
 # PRE_DEFINE_CATEGORIES = {"GanTa": 0}
-# PRE_DEFINE_CATEGORIES = {"DaoXianYiWu": 0, "DiaoChe": 1, "ShiGongJiXie": 2, "TaDiao": 3, "YanHuo":4, "GanTa":5}
+PRE_DEFINE_CATEGORIES = {"DaoXianYiWu": 0, "DiaoChe": 1, "ShiGongJiXie": 2, "TaDiao": 3, "YanHuo":4, "GanTa":5}
 
 def get_categories(xml_files):
     '''
@@ -185,18 +186,36 @@ if __name__ == '__main__':
         type=str,
         help='Directory path to xml files.'
         )
-    # parser.add_argument(
-    #     "--xml-dir3", 
-    #     default='/shared/xjd/DataSets/transmission_line_detection/test_xml',
-    #     type=str,
-    #     help='Directory path to xml files.'
-    #     )
-    # parser.add_argument(
-    #     "--xml-dir4", 
-    #     default='/shared/xjd/DataSets/transmission_line_detection/train14000_xml',
-    #     type=str,
-    #     help='Directory path to xml files.'
-    #     )
+    parser.add_argument(
+        "--xml-dir3", 
+        default='/shared/xjd/DataSets/transmission_line_detection/test_xml',
+        type=str,
+        help='Directory path to xml files.'
+        )
+    parser.add_argument(
+        "--xml-dir4", 
+        default='/shared/xjd/DataSets/transmission_line_detection/train14000_xml',
+        type=str,
+        help='Directory path to xml files.'
+        )
+    parser.add_argument(
+        "--xml-dir5", 
+        default='/shared/xjd/DataSets/transmission_line_detection/test_xml',
+        type=str,
+        help='Directory path to xml files.'
+        )
+    parser.add_argument(
+        "--xml-dir6", 
+        default='/shared/xjd/DataSets/transmission_line_detection/train14000_xml',
+        type=str,
+        help='Directory path to xml files.'
+        )
+    parser.add_argument(
+        "--xml-dir7", 
+        default='/shared/xjd/DataSets/transmission_line_detection/train14000_xml',
+        type=str,
+        help='Directory path to xml files.'
+        )
     parser.add_argument(
         "--json-file",
         default='/shared/xjd/DataSets/transmission_line_detection/train_6cates_1280.json',
@@ -210,23 +229,138 @@ if __name__ == '__main__':
         help='Output COCO format json file.'
         )
     args = parser.parse_args()
-    xml_files = glob.glob(os.path.join(args.xml_dir, "*.xml"))    # 返回以.xml结尾的目录及文件列表
+    # ----------------------------------------------------------------
+    # xml_files = glob.glob(os.path.join(args.xml_dir, "*.xml"))    # 返回以.xml结尾的目录及文件列表
     
-    # 下面的代码只有在结合两个来源的数据的时候用到
-    # xml_files2 = glob.glob(os.path.join('/shared/xjd/DataSets/transmission_line_detection/train14000_xml', "*.xml"))
+    # # 下面的代码只有在结合两个来源的数据的时候用到
     # xml_files2 = glob.glob(os.path.join(args.xml_dir2, "*.xml"))
-    # xml_files.extend(xml_files2[:-200])
+    # xml_files.extend(xml_files2[2500:])
     # xml_files3 = glob.glob(os.path.join(args.xml_dir3, "*.xml"))
-    # xml_files3.extend(xml_files2[-200:])
+    # xml_files.extend(xml_files3)
 
-    # 大数据集时才需要下面的代码
+    # # 大数据集时才需要下面的代码
     # xml_files4 = glob.glob(os.path.join(args.xml_dir4, "*.xml"))
-    # xml_files.extend(xml_files4)
+    # xml_files.extend(xml_files4[:-200])
+    # xml_files5 = glob.glob(os.path.join(args.xml_dir5, "*.xml"))
+    # xml_files.extend(xml_files5)
+    # xml_files6 = glob.glob(os.path.join(args.xml_dir6, "*.xml"))
+    # xml_files.extend(xml_files6)
 
-    print(f"Number of xml files:{len(xml_files)}")
-    convert(xml_files, args.json_file)
-    print(f"Success:{args.json_file}")
+    # print(f"Number of xml files:{len(xml_files)}")
+    # convert(xml_files, args.json_file)
+    # print(f"Success:{args.json_file}")
 
     # print(f"Number of xml files:{len(xml_files3)}")
     # convert(xml_files3, args.json_file2)
     # print(f"Success:{args.json_file2}")
+    # -------------------------------------------------------------
+    
+    
+    # -------------------------------------------------------------
+    # train_files = []
+    # test_files = []
+    # xml_files = random.shuffle(glob.glob(os.path.join(args.xml_dir, "*.xml")))    # 返回以.xml结尾的目录及文件列表
+    # xml_files2 = random.shuffle(glob.glob(os.path.join(args.xml_dir2, "*.xml")))
+    # xml_files2 = xml_files2[2500:]
+    # xml_files3 = random.shuffle(glob.glob(os.path.join(args.xml_dir3, "*.xml")))
+    # xml_files4 = random.shuffle(glob.glob(os.path.join(args.xml_dir4, "*.xml")))
+    # xml_files5 = random.shuffle(glob.glob(os.path.join(args.xml_dir5, "*.xml")))
+    # xml_files6 = random.shuffle(glob.glob(os.path.join(args.xml_dir6, "*.xml")))
+    # xml_files7 = random.shuffle(glob.glob(os.path.join(args.xml_dir7, "*.xml")))
+    
+    # train_files.extend(xml_files[:554])
+    # train_files.extend(xml_files2[:554])
+    # train_files.extend(xml_files3[:554])
+    # train_files.extend(xml_files4[:554])
+    # train_files.extend(xml_files5[:554])
+    # train_files.extend(xml_files6[:554])
+    # train_files.extend(xml_files7[:554])
+    
+    # test_files.extend(xml_files[:554])
+    # test_files.extend(xml_files2[:554])
+    # test_files.extend(xml_files3[:554])
+    # test_files.extend(xml_files4[:554])
+    # test_files.extend(xml_files5[:554])
+    # test_files.extend(xml_files6[:554])
+    # test_files.extend(xml_files7[:554])
+
+    # print(f"Number of xml files:{len(xml_files)}")
+    # convert(xml_files, args.json_file)
+    # print(f"Success:{args.json_file}")
+    # -------------------------------------------------------------
+    
+    xml_files = glob.glob(os.path.join(args.xml_dir, "*.xml"))    # 返回以.xml结尾的目录及文件列表
+    random.shuffle(xml_files)
+    
+    xml_files2 = glob.glob(os.path.join(args.xml_dir2, "*.xml"))
+    xml_files2 = xml_files2[2500:]
+    random.shuffle(xml_files2)
+    xml_files2_DiaoChe = [i for i in xml_files2 if os.path.basename(i)[:3] == 'Dia']
+    xml_files2_SGJX = [i for i in xml_files2 if os.path.basename(i)[:3] == 'SGJ']
+    xml_files2_TaDiao = [i for i in xml_files2 if os.path.basename(i)[:3] == 'TaD']
+    xml_files2_DXYW = [i for i in xml_files2 if os.path.basename(i)[:3] == 'DXY']
+    xml_files2_YanHuo = [i for i in xml_files2 if os.path.basename(i)[:3] == 'Yan']
+    print(len(xml_files2_DiaoChe), len(xml_files2_SGJX), len(xml_files2_TaDiao), len(xml_files2_DXYW), len(xml_files2_YanHuo))
+    
+    
+    xml_files3 = glob.glob(os.path.join(args.xml_dir3, "*.xml"))
+    random.shuffle(xml_files3)
+    
+    xml_files4 = glob.glob(os.path.join(args.xml_dir4, "*.xml"))
+    random.shuffle(xml_files4)
+    
+    xml_files5 = glob.glob(os.path.join(args.xml_dir5, "*.xml"))
+    random.shuffle(xml_files5)
+    xml_files5_DiaoChe = [i for i in xml_files5 if os.path.basename(i)[:3] == 'Dia']
+    xml_files5_SGJX = [i for i in xml_files5 if os.path.basename(i)[:3] == 'SGJ']
+    xml_files5_TaDiao = [i for i in xml_files5 if os.path.basename(i)[:3] == 'TaD']
+    xml_files5_DXYW = [i for i in xml_files5 if os.path.basename(i)[:3] == 'DXY']
+    xml_files5_YanHuo = [i for i in xml_files5 if os.path.basename(i)[:3] == 'Yan']
+    print(len(xml_files5_DiaoChe), len(xml_files5_SGJX), len(xml_files5_TaDiao), len(xml_files5_DXYW), len(xml_files5_YanHuo))
+    
+    xml_files6 = glob.glob(os.path.join(args.xml_dir6, "*.xml"))
+    random.shuffle(xml_files6)
+    
+    xml_files7 = glob.glob(os.path.join(args.xml_dir7, "*.xml"))
+    random.shuffle(xml_files7)
+    xml_files7_DiaoChe = [i for i in xml_files7 if os.path.basename(i)[:3] == 'Dia']
+    xml_files7_SGJX = [i for i in xml_files7 if os.path.basename(i)[:3] == 'SGJ']
+    xml_files7_TaDiao = [i for i in xml_files7 if os.path.basename(i)[:3] == 'TaD']
+    xml_files7_DXYW = [i for i in xml_files7 if os.path.basename(i)[:3] == 'DXY']
+    xml_files7_YanHuo = [i for i in xml_files7 if os.path.basename(i)[:3] == 'Yan']
+    print(len(xml_files7_DiaoChe), len(xml_files7_SGJX), len(xml_files7_TaDiao), len(xml_files7_DXYW), len(xml_files7_YanHuo))
+    
+    train_files = []
+    test_files = []
+    
+    train_files.extend(xml_files[:530])
+    train_files.extend(xml_files2)
+    train_files.extend(xml_files3[:170])
+    train_files.extend(xml_files4)
+    train_files.extend(xml_files5[:2100])
+    train_files.extend(xml_files6[:1710])
+    train_files.extend(xml_files7_DiaoChe[:668])
+    train_files.extend(xml_files7_SGJX[:250])
+    train_files.extend(xml_files7_TaDiao[:220])
+    train_files.extend(xml_files7_DXYW[:12])
+    train_files.extend(xml_files7_YanHuo[:44])
+    
+    test_files.extend(xml_files[530:])
+    test_files.extend(xml_files3[170:])
+    test_files.extend(xml_files5[2100:])
+    test_files.extend(xml_files6[1710:])
+    test_files.extend(xml_files7_DiaoChe[668:])
+    test_files.extend(xml_files7_SGJX[250:])
+    test_files.extend(xml_files7_TaDiao[220:])
+    test_files.extend(xml_files7_DXYW[12:])
+    test_files.extend(xml_files7_YanHuo[44:])
+    
+    print(len(train_files), len(test_files))
+
+    print(f"Number of xml files:{len(train_files)}")
+    convert(train_files, args.json_file)
+    print(f"Success:{args.json_file}")
+    
+    print(f"Number of xml files:{len(test_files)}")
+    convert(test_files, args.json_file2)
+    print(f"Success:{args.json_file2}")
