@@ -176,13 +176,19 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Convert xml annotations to COCO format!')
     parser.add_argument(
         "--xml-dir", 
-        default='/shared/xjd/DataSets/transmission_line_detection/self_labeled_xml',
+        default='/shared/xjd/DataSets/transmission_line_detection/train_xml',
         type=str,
         help='Directory path to xml files.'
         )
     parser.add_argument(
         "--xml-dir2", 
-        default='/shared/xjd/DataSets/transmission_line_detection/test',
+        default='/shared/xjd/DataSets/transmission_line_detection/daoxianyiwu_xml',
+        type=str,
+        help='Directory path to xml files.'
+        )
+    parser.add_argument(
+        "--xml-dir3", 
+        default='/shared/xjd/DataSets/transmission_line_detection/fire_detection_xml',
         type=str,
         help='Directory path to xml files.'
         )
@@ -218,16 +224,16 @@ if __name__ == '__main__':
         )
     parser.add_argument(
         "--json-file",
-        default='/shared/xjd/DataSets/transmission_line_detection/train_6cates_1280.json',
+        default='/shared/xjd/DataSets/transmission_line_detection/data1_add_dxyw.json',
         type=str,
         help='Output COCO format json file.'
         )
-    parser.add_argument(
-        "--json-file2",
-        default='/shared/xjd/DataSets/transmission_line_detection/test_6cates_3490.json',
-        type=str,
-        help='Output COCO format json file.'
-        )
+    # parser.add_argument(
+    #     "--json-file2",
+    #     default='/shared/xjd/DataSets/transmission_line_detection/test_6cates_3490.json',
+    #     type=str,
+    #     help='Output COCO format json file.'
+    #     )
     args = parser.parse_args()
     # ----------------------------------------------------------------
     # xml_files = glob.glob(os.path.join(args.xml_dir, "*.xml"))    # 返回以.xml结尾的目录及文件列表

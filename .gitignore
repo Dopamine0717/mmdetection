@@ -126,6 +126,9 @@ work_dirs_cascade_rcnn/
 work_dirs_detr/
 work_dirs_faster_rcnn/
 work_dirs_fcos/
+work_dirs_fp16/
+work_dirs_r50rsb/
+work_dirs_r101/
 work_dirs_retinanet/
 work_dirs_semi_supervision/
 work_dirs_test/
