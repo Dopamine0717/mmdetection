@@ -12,7 +12,6 @@ from torch.utils.data.dataset import ConcatDataset as _ConcatDataset
 from .builder import DATASETS, PIPELINES
 from .coco import CocoDataset
 
-
 @DATASETS.register_module()
 class ConcatDataset(_ConcatDataset):
     """A wrapper of concatenated dataset.

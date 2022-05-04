@@ -12,7 +12,7 @@ from .coco import CocoDataset
 @DATASETS.register_module()
 class OurDataset(CocoDataset):
 
-    CLASSES = ("DaoXianYiWu", "DiaoChe", "ShiGongJiXie", "TaDiao", "YanHuo")
+    CLASSES = ("DaoXianYiWu", "DiaoChe", "ShiGongJiXie", "TaDiao", "YanHuo", "GanTa")
 
     def load_annotations(self, ann_file):
         """Load annotation from COCO style annotation file.
